@@ -1,13 +1,13 @@
 'use client';
 import { useState } from "react";
-import { FileText, Briefcase, MessageSquare, Search, Mail, Award, ArrowRight } from "lucide-react";
+import { FileText, Wallet, Video, Search, Mail, Award, ArrowRight } from "lucide-react";
 
 const services = [
   {
     icon: FileText,
-    title: "Resume Builder",
-    description: "Create professional, ATS-optimized resumes that stand out. Our AI analyzes job descriptions and tailors your resume for maximum impact.",
-    link: "Build Resume",
+    title: "Resume Checker",
+    description: "Check your resume ATS compatibility and get personalized feedback to improve your chances of landing a job.",
+    link: "Check Resume ATS",
   },
   {
     icon: Mail,
@@ -16,7 +16,7 @@ const services = [
     link: "Write Cover Letter",
   },
   {
-    icon: MessageSquare,
+    icon: Video,
     title: "Interview Coach",
     description: "Practice with AI-powered mock interviews. Get instant feedback, suggested answers, and confidence-building tips.",
     link: "Start Practice",
@@ -29,15 +29,15 @@ const services = [
   },
   {
     icon: Award,
-    title: "Skills Assessment",
-    description: "Identify your strengths and areas for growth. Get personalized recommendations to boost your career prospects.",
-    link: "Assess Skills",
+    title: "Courses Recommendation",
+    description: "Get personalized career development recommendations based on your skills and goals. Our AI-powered courses are tailored to your needs.",
+    link: "Get Courses",
   },
   {
-    icon: Briefcase,
-    title: "Career Advisor",
-    description: "Get AI-powered career guidance. Plan your path, negotiate salaries, and make informed decisions about your future.",
-    link: "Get Advice",
+    icon: Wallet,
+    title: "Salary Estimator",
+    description: "Get personalized salary estimates based on your experience, location, and job title. Our AI-powered salary estimator helps you make informed decisions about your future.",
+    link: "Estimate Salary",
   },
 ];
 
@@ -66,9 +66,9 @@ const ServicesSection = () => {
               </h3>
             </div>
             
-            <div className="flex-1 flex items-center justify-center">
-              <div className="w-48 h-48 bg-primary/10 rounded-full flex items-center justify-center">
-                <div className="w-32 h-32 bg-primary/20 rounded-full flex items-center justify-center">
+            <div className="flex-1 animate-bounce flex items-center justify-center">
+              <div className="w-48  h-48 bg-primary/10 rounded-full flex items-center justify-center">
+                <div className=" w-32 h-32  bg-primary/20 rounded-full flex items-center justify-center">
                   <ActiveIcon className="w-16 h-16 text-primary" />
                 </div>
               </div>

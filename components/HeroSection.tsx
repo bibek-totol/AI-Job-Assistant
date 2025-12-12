@@ -1,10 +1,10 @@
-'use client';
+
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 
 const HeroSection = () => {
   return (
-    <section className="hero-gradient py-16 lg:py-24">
+    <section className="hero-gradient py-8  px-0 lg:px-14 lg:py-24">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
@@ -65,12 +65,12 @@ const HeroSection = () => {
           <div className="overflow-hidden relative">
             <div className="flex gap-16 animate-marquee">
               {["Google", "Microsoft", "Amazon", "Meta", "Apple", "Netflix", "Spotify", "Uber"].map((company, i) => (
-                <span key={i} className="text-xl font-bold text-muted-foreground/50 whitespace-nowrap">
+                <span key={i} className="text-xl font-bold text-gray-500 whitespace-nowrap">
                   {company}
                 </span>
               ))}
               {["Google", "Microsoft", "Amazon", "Meta", "Apple", "Netflix", "Spotify", "Uber"].map((company, i) => (
-                <span key={`dup-${i}`} className="text-xl font-bold text-muted-foreground/50 whitespace-nowrap">
+                <span key={`dup-${i}`} className="text-xl font-bold text-gray-500  whitespace-nowrap">
                   {company}
                 </span>
               ))}

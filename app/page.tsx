@@ -1,5 +1,4 @@
-import Link from 'next/link';
-import Button from '@/components/Button';
+
 import HeroSection from '@/components/HeroSection';
 import ServicesSection from '@/components/ServicesSection';
 import FeaturesSection from '@/components/FeaturesSection';
