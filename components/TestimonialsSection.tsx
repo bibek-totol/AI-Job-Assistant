@@ -52,12 +52,12 @@ const TestimonialsSection = () => {
         </div>
 
         {/* Bento Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 ">
           {testimonials.map((testimonial, index) => (
             <div
               key={index}
               className={`testimonial-card ${
-                testimonial.variant === "blue" ? "testimonial-card-blue" : "testimonial-card-white"
+                testimonial.variant === "blue" ? "bg-black rounded-xl p-6" : "bg-violet-100 rounded-xl p-6"
               }`}
             >
               <p className={`text-lg mb-6 leading-relaxed ${

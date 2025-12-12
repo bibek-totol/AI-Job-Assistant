@@ -4,7 +4,7 @@ import { ArrowRight, Sparkles } from "lucide-react";
 
 const HeroSection = () => {
   return (
-    <section className="hero-gradient py-8  px-0 lg:px-14 lg:py-24">
+    <section className="hero-gradient py-8  px-0 lg:px-14 ">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}

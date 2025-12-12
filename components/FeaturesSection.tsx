@@ -45,13 +45,13 @@ const FeaturesSection = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 ">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
               <div 
                 key={index} 
-                className="feature-card group"
+                className="bg-violet-100 rounded-xl p-6"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">

@@ -81,14 +81,7 @@ const FAQSection = () => {
               </p>
             </div>
             
-            <div>
-              <h3 className="text-lg font-bold mb-3">OUR MISSION</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Our mission is to democratize career success by building tools that are reliable, 
-                ethical, and tailored to real-world challenges. We empower every job seeker to 
-                present their best self, discover perfect opportunities, and achieve their career goals.
-              </p>
-            </div>
+           
           </div>
         </div>
       </div>

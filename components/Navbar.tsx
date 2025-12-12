@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import logo from '../public/Screenshot_40.jpg';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +20,9 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto ">
         <div className="flex justify-between items-center h-16">
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600" />
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600">
+              <img src={logo.src} className='w-full h-full object-contain' alt="AI Job Assistant Logo" />
+            </div>
             <span className="text-[14px] font-bold gradient-text">AI Job Assistant</span>
           </Link>
 

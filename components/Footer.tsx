@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import logo from '../public/Screenshot_40.jpg';
 
 export default function Footer() {
   const footerLinks = {
@@ -30,7 +31,11 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="col-span-1">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600" />
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600" 
+              
+              >
+  <img src={logo.src} className='w-full h-full object-contain' alt="AI Job Assistant Logo" />
+              </div>
               <span className="text-xl font-bold gradient-text">AI Job Assistant</span>
             </div>
             <p className="text-gray-600 text-sm leading-relaxed">
