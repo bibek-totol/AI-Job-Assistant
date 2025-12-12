@@ -20,7 +20,7 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           <Link href="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600" />
-            <span className="text-xl font-bold gradient-text">AI Job Assistant</span>
+            <span className="text-[14px] font-bold gradient-text">AI Job Assistant</span>
           </Link>
 
           {/* Desktop Navigation */}

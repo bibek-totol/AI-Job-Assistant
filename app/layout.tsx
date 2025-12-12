@@ -1,14 +1,50 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import localFont from 'next/font/local';
 
-const inter = Inter({ subsets: ['latin'] });
+
+
+const sekuya = localFont({
+  src: '../public/fonts/Sekuya-Regular.ttf',
+  variable: '--font-sekuya',
+});
 
 export const metadata: Metadata = {
-  title: 'AI Job Assistant - Your Personal Career Companion',
-  description: 'Find jobs, ace interviews, and advance your career with AI-powered tools',
+  title: {
+    default: 'AI Job Assistant - Your Personal Career Companion',
+    template: '%s | AI Job Assistant',
+  },
+  description: 'Find jobs, ace interviews, and advance your career with AI-powered tools. Resume checker, interview scheduler, job suggestions, and more.',
+  keywords: ['AI Job Assistant', 'Career Companion', 'Resume Checker', 'Interview Prep', 'Job Search', 'AI Career Tools'],
+  authors: [{ name: 'AI Job Assistant Team' }],
+  creator: 'AI Job Assistant',
+  publisher: 'AI Job Assistant',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://ai-job-assistant.demo',
+    title: 'AI Job Assistant - Your Personal Career Companion',
+    description: 'Find jobs, ace interviews, and advance your career with AI-powered tools.',
+    siteName: 'AI Job Assistant',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'AI Job Assistant',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AI Job Assistant - Your Personal Career Companion',
+    description: 'Find jobs, ace interviews, and advance your career with AI-powered tools.',
+    creator: '@aijobassistant',
+    images: ['/twitter-image.jpg'],
+  },
+  metadataBase: new URL('https://ai-job-assistant.demo'),
 };
 
 export default function RootLayout({
@@ -18,7 +54,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+       <body className= {sekuya.className}>
         <Navbar />
         <main className="min-h-dvh pt-16 ">{children}</main>
         <Footer />

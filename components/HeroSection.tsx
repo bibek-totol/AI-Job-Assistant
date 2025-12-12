@@ -27,7 +27,7 @@ const HeroSection = () => {
             </p>
 
             <div className="flex flex-wrap gap-4">
-              <Button size="lg" className="rounded-full px-8 font-semibold">
+              <Button size="lg" className="rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 font-semibold">
                 Get Started
               </Button>
               <Button 
