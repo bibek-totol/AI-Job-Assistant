@@ -66,14 +66,14 @@ export default function SalaryEstimator() {
   };
 
   return (
-    <div className="min-h-screen gradient-bg py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <SectionTitle center subtitle="Get AI-powered salary insights for any role">
           Salary Estimator
         </SectionTitle>
 
         {!estimate ? (
-          <div className="bg-white rounded-2xl shadow-lg p-8">
+          <div className="bg-[#4B3C70]/80 rounded-2xl shadow-lg p-8">
             <div className="space-y-6">
               <Input
                 label="Job Title"

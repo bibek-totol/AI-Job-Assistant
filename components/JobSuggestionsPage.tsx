@@ -90,14 +90,14 @@ export default function JobSuggestion() {
   };
 
   return (
-    <div className="min-h-screen gradient-bg py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <SectionTitle center subtitle="AI-powered job matching based on your skills and preferences">
           Smart Job Search
         </SectionTitle>
 
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-          <div className="space-y-6">
+        <div className="bg-[#4B3C70]/80 rounded-2xl shadow-lg p-8 mb-8">
+          <div className="space-y-6 ">
             <Textarea
               label="Resume Summary / Job Preferences"
               placeholder="Describe your skills, experience, and what you're looking for..."
@@ -141,10 +141,10 @@ export default function JobSuggestion() {
         {!isSearching && jobs.length > 0 && (
           <div>
             <div className="mb-6">
-              <h3 className="text-2xl font-bold text-gray-900">
+              <h3 className="text-2xl font-bold text-gray-300">
                 Found {jobs.length} Perfect Matches
               </h3>
-              <p className="text-gray-600">Sorted by relevance to your profile</p>
+              <p className="text-gray-400">Sorted by relevance to your profile</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {jobs.map((job, index) => (

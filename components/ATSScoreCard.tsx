@@ -26,8 +26,8 @@ export default function ATSScoreCard({
   return (
     <div className="space-y-6">
       {/* Score Display */}
-      <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">ATS Compatibility Score</h2>
+      <div className="bg-purple-900/50 backdrop-blur-sm rounded-2xl shadow-lg p-8 text-center">
+        <h2 className="text-2xl font-bold text-gray-300 mb-4">ATS Compatibility Score</h2>
         <div
           className={`inline-flex items-center justify-center w-40 h-40 rounded-full bg-gradient-to-br ${getScoreBg(
             score
@@ -41,8 +41,8 @@ export default function ATSScoreCard({
       </div>
 
       {/* Strengths */}
-      <div className="bg-white rounded-2xl shadow-lg p-6">
-        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+      <div className="bg-purple-900/50 backdrop-blur-sm rounded-2xl shadow-lg p-6">
+        <h3 className="text-xl font-bold text-white mb-4 flex items-center">
           <svg
             className="w-6 h-6 mr-2 text-green-600"
             fill="none"
@@ -60,17 +60,17 @@ export default function ATSScoreCard({
         </h3>
         <ul className="space-y-2">
           {strengths.map((strength, index) => (
-            <li key={index} className="flex items-start">
-              <span className="text-green-600 mr-2">•</span>
-              <span className="text-gray-700">{strength}</span>
+            <li key={index} className="flex items-start border-b-2 border-green-500 pb-2">
+              <span className="text-green-600 mr-2 text-2xl">•</span>
+              <span className="text-cyan-100">{strength}</span>
             </li>
           ))}
         </ul>
       </div>
 
       {/* Improvements */}
-      <div className="bg-white rounded-2xl shadow-lg p-6">
-        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+      <div className="bg-purple-900/50 backdrop-blur-sm rounded-2xl shadow-lg p-6">
+        <h3 className="text-xl font-bold text-white mb-4 flex items-center">
           <svg
             className="w-6 h-6 mr-2 text-orange-600"
             fill="none"
@@ -88,17 +88,17 @@ export default function ATSScoreCard({
         </h3>
         <ul className="space-y-2">
           {improvements.map((improvement, index) => (
-            <li key={index} className="flex items-start">
-              <span className="text-orange-600 mr-2">•</span>
-              <span className="text-gray-700">{improvement}</span>
+            <li key={index} className="flex items-start border-b-2 border-red-500 pb-2">
+              <span className="text-orange-600 mr-2 text-2xl">•</span>
+              <span className="text-cyan-100">{improvement}</span>
             </li>
           ))}
         </ul>
       </div>
 
       {/* Missing Skills */}
-      <div className="bg-white rounded-2xl shadow-lg p-6">
-        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+      <div className="bg-purple-900/50 backdrop-blur-sm rounded-2xl shadow-lg p-6">
+        <h3 className="text-xl font-bold text-white mb-4 flex items-center">
           <svg
             className="w-6 h-6 mr-2 text-indigo-600"
             fill="none"

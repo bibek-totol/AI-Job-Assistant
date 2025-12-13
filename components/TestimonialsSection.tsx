@@ -42,7 +42,7 @@ const testimonials = [
 
 const TestimonialsSection = () => {
   return (
-    <section className="py-20 bg-card px-0 lg:px-14">
+    <section className="py-20 bg-[#4B3C70]/60 px-0 lg:px-14">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl lg:text-5xl font-bold mb-4">Trusted by Thousands</h2>
@@ -57,7 +57,7 @@ const TestimonialsSection = () => {
             <div
               key={index}
               className={`testimonial-card ${
-                testimonial.variant === "blue" ? "bg-black rounded-xl p-6" : "bg-violet-100 rounded-xl p-6"
+                testimonial.variant === "blue" ? "bg-black rounded-3xl p-6" : "bg-violet-200 rounded-3xl p-6"
               }`}
             >
               <p className={`text-lg mb-6 leading-relaxed ${

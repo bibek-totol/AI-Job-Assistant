@@ -13,17 +13,18 @@ export default function Navbar() {
     { href: '/interview-scheduler', label: 'Interview' },
     { href: '/courses', label: 'Courses' },
     { href: '/salary-estimator', label: 'Salary' },
+    { href: '/cover-letter', label: 'Cover Letter' },
   ];
 
   return (
-    <nav className="fixed top-0 w-full z-50 glass border-b border-white/10">
+    <nav className="fixed top-0 w-full z-50 glass border-b border-white/10 text-[13px]">
       <div className="max-w-7xl mx-auto ">
         <div className="flex justify-between items-center h-16">
           <Link href="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600">
               <img src={logo.src} className='w-full h-full object-contain' alt="AI Job Assistant Logo" />
             </div>
-            <span className="text-[14px] font-bold gradient-text">AI Job Assistant</span>
+            <span className="font-bold gradient-text">AI Job Assistant</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -32,7 +33,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-gray-700 hover:text-indigo-600 transition-colors duration-200 font-medium"
+                className="text-slate-100 hover:text-indigo-600 transition-colors duration-200 font-medium"
               >
                 {link.label}
               </Link>

@@ -43,7 +43,7 @@ export default function FileUpload({ label, accept = '.pdf', onFileSelect }: Fil
   return (
     <div className="w-full">
       {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-300 mb-2">
           {label}
         </label>
       )}
@@ -78,10 +78,10 @@ export default function FileUpload({ label, accept = '.pdf', onFileSelect }: Fil
             strokeLinejoin="round"
           />
         </svg>
-        <p className="mt-2 text-sm text-gray-600">
+        <p className="mt-2 text-sm text-whiite">
           {fileName || 'Click to upload or drag and drop'}
         </p>
-        <p className="mt-1 text-xs text-gray-500">PDF files only (MAX. 10MB)</p>
+        <p className="mt-1 text-xs text-gray-300">PDF files only (MAX. 10MB)</p>
       </div>
     </div>
   );

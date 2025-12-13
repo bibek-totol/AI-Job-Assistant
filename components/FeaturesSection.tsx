@@ -2,11 +2,11 @@
 import { Clock, Shield, Zap, Target, Settings, Users } from "lucide-react";
 
 const features = [
-  {
-    icon: Clock,
-    title: "Save Time Instantly",
-    description: "Automate resume creation, cover letter writing, and job applications to free up hours in your job search.",
-  },
+  // {
+  //   icon: Clock,
+  //   title: "Save Time Instantly",
+  //   description: "Automate resume creation, cover letter writing, and job applications to free up hours in your job search.",
+  // },
   {
     icon: Shield,
     title: "ATS-Optimized",
@@ -39,10 +39,10 @@ const FeaturesSection = () => {
     <section className="py-20 hero-gradient px-0 lg:px-14">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl lg:text-5xl font-bold mb-4">Why Choose JobAI</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <h2 className="text-4xl lg:text-5xl text-gray-300  font-bold mb-4">Why Choose JobAI</h2>
+          {/* <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Discover how JobAI helps job seekers save time, land interviews, and advance their careers with AI-powered tools.
-          </p>
+          </p> */}
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 ">
@@ -51,14 +51,14 @@ const FeaturesSection = () => {
             return (
               <div 
                 key={index} 
-                className="bg-violet-100 rounded-xl p-6"
+                className="bg-violet-300 rounded-3xl p-6"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                   <Icon className="w-6 h-6 text-primary group-hover:text-primary-foreground transition-colors" />
                 </div>
                 <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
+                <p className="text-gray-600">{feature.description}</p>
               </div>
             );
           })}

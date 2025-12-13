@@ -46,11 +46,11 @@ const ServicesSection = () => {
   const ActiveIcon = services[activeService].icon;
 
   return (
-    <section className="py-20 bg-secondary" id="services">
+    <section className="py-20 bg-[#4B3C70]/60" id="services">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl lg:text-5xl font-bold mb-4">Explore Our Services</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <h2 className="text-4xl lg:text-5xl text-gray-300 font-bold mb-4">Explore Our Services</h2>
+          <p className="text-lg text-gray-100 max-w-2xl mx-auto">
             AI-powered tools designed to accelerate your job search, enhance your applications, 
             and boost your career growth.
           </p>
@@ -67,9 +67,9 @@ const ServicesSection = () => {
             </div>
             
             <div className="flex-1 animate-bounce flex items-center justify-center">
-              <div className="w-48  h-48 bg-primary/10 rounded-full flex items-center justify-center">
+              <div className="w-48  h-48 bg-violet-600/30 rounded-full flex items-center justify-center">
                 <div className=" w-32 h-32  bg-primary/20 rounded-full flex items-center justify-center">
-                  <ActiveIcon className="w-16 h-16 text-primary" />
+                  <ActiveIcon className="w-16 h-16 text-white" />
                 </div>
               </div>
             </div>
@@ -77,13 +77,13 @@ const ServicesSection = () => {
 
           {/* Service Description */}
           <div className="bg-cream rounded-3xl p-8 lg:p-12 min-h-[500px] flex flex-col justify-center">
-            <h3 className="text-3xl font-bold mb-6">{services[activeService].title}</h3>
-            <p className="text-lg text-muted-foreground mb-8">
+            <h3 className="text-3xl font-bold mb-6 text-gray-300">{services[activeService].title}</h3>
+            <p className="text-lg text-gray-100 mb-8">
               {services[activeService].description}
             </p>
             <a 
               href="#" 
-              className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all"
+              className="inline-flex items-center gap-2 text-purple-300 font-semibold hover:gap-3 transition-all"
             >
               {services[activeService].link} <ArrowRight className="w-5 h-5" />
             </a>

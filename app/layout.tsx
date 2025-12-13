@@ -3,7 +3,7 @@ import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import localFont from 'next/font/local';
-
+import bgImage from '../public/backpic.png';
 
 
 const sekuya = localFont({
@@ -52,9 +52,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  
   return (
     <html lang="en">
-       <body className= {sekuya.className}>
+       <body
+  className={`${sekuya.className} bg-contain bg-repeat  bg-center  min-h-screen`}
+  style={{ backgroundImage: `url(${bgImage.src})` }}
+>
+
         <Navbar />
         <main className="min-h-dvh pt-16 ">{children}</main>
         <Footer />

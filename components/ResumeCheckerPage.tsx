@@ -9,57 +9,66 @@ import SkeletonLoader from '@/components/SkeletonLoader';
 
 export default function ResumeChecker() {
   const [file, setFile] = useState<File | null>(null);
+  const [jobDescription, setJobDescription] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [results, setResults] = useState<any>(null);
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     if (!file) return;
     
     setIsAnalyzing(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setResults({
-        score: 85,
-        strengths: [
-          'Clear and concise professional summary',
-          'Quantifiable achievements with metrics',
-          'Well-structured work experience section',
-          'Relevant technical skills highlighted',
-          'Clean, ATS-friendly formatting',
-        ],
-        improvements: [
-          'Add more action verbs to describe responsibilities',
-          'Include specific project outcomes and impact',
-          'Expand on leadership experiences',
-          'Add certifications section',
-        ],
-        missingSkills: [
-          'Cloud Computing (AWS/Azure)',
-          'Docker & Kubernetes',
-          'CI/CD Pipeline',
-          'Agile/Scrum',
-          'Data Analytics',
-        ],
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('jobDescription', jobDescription);
+
+      const response = await fetch('/api/analyze-resume', {
+        method: 'POST',
+        body: formData,
       });
+
+      if (!response.ok) {
+        throw new Error('Analysis failed');
+      }
+
+      const data = await response.json();
+      setResults(data);
+    } catch (error) {
+      console.error('Error analyzing resume:', error);
+      alert('Failed to analyze resume. Please try again.');
+    } finally {
       setIsAnalyzing(false);
-    }, 2000);
+    }
   };
 
   return (
-    <div className="min-h-screen gradient-bg py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8 ">
       <div className="max-w-4xl mx-auto">
-        <SectionTitle center subtitle="Get instant ATS analysis and personalized feedback">
+        <SectionTitle  center subtitle="Get instant ATS analysis and personalized feedback">
           AI Resume Checker
         </SectionTitle>
 
         {!results ? (
-          <div className="bg-white rounded-2xl shadow-lg p-8">
+          <div className="bg-[#4B3C70]/80 rounded-2xl shadow-lg p-8">
             <FileUpload
               label="Upload Your Resume"
               accept=".pdf"
               onFileSelect={setFile}
             />
+
+            <div className="mt-6">
+              <label htmlFor="jobDescription" className="block text-sm font-medium text-white mb-2">
+                Job Description (Optional)
+              </label>
+              <textarea
+                id="jobDescription"
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
+                placeholder="Paste the job description here to get more targeted feedback..."
+                className="w-full px-4 py-3 rounded-lg border border-purple-300/30 bg-white/10 text-white placeholder-purple-200/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 backdrop-blur-sm min-h-[120px] resize-y"
+              />
+            </div>
 
             {file && (
               <div className="mt-6">
@@ -105,12 +114,14 @@ export default function ResumeChecker() {
               improvements={results.improvements}
               missingSkills={results.missingSkills}
             />
-            <div className="mt-6 text-center">
+            <div className="mt-6 text-center ">
               <Button
                 variant="outline"
+                className='cursor-pointer bg-gradient-to-r from-indigo-600 to-purple-600 text-white'
                 onClick={() => {
                   setResults(null);
                   setFile(null);
+                  setJobDescription('');
                 }}
               >
                 Analyze Another Resume

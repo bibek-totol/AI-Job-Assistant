@@ -39,11 +39,11 @@ const audiences = [
 
 const FAQSection = () => {
   return (
-    <section className="py-20 hero-gradient px-0 lg:px-14">
+    <section className="py-20 px-0 lg:px-14 bg-[#4B3C70]/60 ">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl lg:text-5xl font-bold mb-4">Your Questions, Answered</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">Your Questions, Answered</h2>
+          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
             Explore how JobAI can support you at every stage of your career journey.
           </p>
         </div>
@@ -51,7 +51,7 @@ const FAQSection = () => {
         <div className="grid lg:grid-cols-3 gap-12">
           {/* Accordion */}
           <div className="lg:col-span-2">
-            <p className="text-sm font-semibold text-muted-foreground mb-4 tracking-wider">WHO WE SERVE</p>
+            <p className="text-lg font-semibold text-indigo-400 mb-4 tracking-wider">WHO WE SERVE</p>
             <Accordion type="single" collapsible className="space-y-2">
               {audiences.map((item, index) => (
                 <AccordionItem 
@@ -59,10 +59,10 @@ const FAQSection = () => {
                   value={`item-${index}`}
                   className="border-b border-border"
                 >
-                  <AccordionTrigger className="text-left text-lg font-bold hover:text-purple-600 py-4">
+                  <AccordionTrigger className="text-left text-gray-100 text-lg font-bold hover:text-purple-600 py-4">
                     {item.title}
                   </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground pb-4">
+                  <AccordionContent className="text-gray-400 pb-4">
                     {item.content}
                   </AccordionContent>
                 </AccordionItem>
@@ -73,8 +73,8 @@ const FAQSection = () => {
           {/* Purpose & Mission */}
           <div className="space-y-8">
             <div>
-              <h3 className="text-lg font-bold mb-3">OUR PURPOSE</h3>
-              <p className="text-muted-foreground leading-relaxed">
+              <h3 className="text-lg text-gray-100  ">OUR PURPOSE</h3>
+              <p className="text-gray-400 leading-relaxed">
                 Our purpose is to make career advancement accessible, efficient, and achievable for everyone. 
                 We remove the barriers that prevent job seekers from landing their dream roles by providing 
                 AI-powered tools that level the playing field.
