@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import SectionTitle from '@/components/SectionTitle';
 import FileUpload from '@/components/FileUpload';
 import Button from '@/components/Button';
@@ -12,25 +13,35 @@ export default function CoverLetterGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedLetter, setGeneratedLetter] = useState('');
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!file || !jobDescription) return;
     
     setIsGenerating(true);
+    const loadingToast = toast.loading('Generating your cover letter...');
     
-    // Simulate API call
-    setTimeout(() => {
-      setGeneratedLetter(`Dear Hiring Manager,
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('jobDescription', jobDescription);
 
-I am writing to express my strong interest in the position as described. With my background in [relevant field based on CV] and my passion for [company mission/industry], I am confident in my ability to contribute effectively to your team.
+      const response = await fetch('/api/generate-cover-letter', {
+        method: 'POST',
+        body: formData,
+      });
 
-Based on the job description, I understand you are looking for someone who can [key requirement from JD]. My experience with [relevant skill] aligns perfectly with this need.
+      if (!response.ok) {
+        throw new Error('Failed to generate cover letter');
+      }
 
-I would welcome the opportunity to discuss how my skills and experience make me a strong candidate for this role. Thank you for your time and consideration.
-
-Sincerely,
-[Your Name]`);
+      const data = await response.json();
+      setGeneratedLetter(data.coverLetter);
+      toast.success('Cover letter generated successfully!', { id: loadingToast });
+    } catch (error) {
+      console.error('Error generating cover letter:', error);
+      toast.error('Failed to generate cover letter. Please try again.', { id: loadingToast });
+    } finally {
       setIsGenerating(false);
-    }, 2000);
+    }
   };
 
   return (
@@ -45,7 +56,7 @@ Sincerely,
             
             {/* CV Upload Section */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">1. Upload Your CV</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">1. Upload Your CV</h3>
               <FileUpload
                 label="Upload Resume (PDF)"
                 accept=".pdf"
@@ -55,12 +66,12 @@ Sincerely,
 
             {/* Job Description Section */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">2. Job Description</h3>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <h3 className="text-lg font-semibold text-white mb-4">2. Job Description</h3>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
                 Paste the job description here
               </label>
               <textarea
-                className="w-full h-48 p-4 border-2 border-gray-300 rounded-xl focus:border-indigo-500 focus:ring-0 transition-colors resize-none text-gray-700"
+                className="w-full h-48 p-4 border-2 border-gray-300 rounded-xl focus:border-indigo-500 focus:ring-0 transition-colors resize-none text-gray-100"
                 placeholder="Paste the full job description..."
                 value={jobDescription}
                 onChange={(e) => setJobDescription(e.target.value)}
@@ -92,6 +103,7 @@ Sincerely,
               <div className="flex gap-4">
                 <Button
                   variant="outline"
+                  className='cursor-pointer text-[13px]'
                   onClick={() => {
                     setGeneratedLetter('');
                     setFile(null);
@@ -100,7 +112,13 @@ Sincerely,
                 >
                   Create New
                 </Button>
-                <Button onClick={() => navigator.clipboard.writeText(generatedLetter)}>
+                <Button 
+                  className='cursor-pointer text-[13px]' 
+                  onClick={() => {
+                    navigator.clipboard.writeText(generatedLetter);
+                    toast.success('Cover letter copied to clipboard!');
+                  }}
+                >
                   Copy to Clipboard
                 </Button>
               </div>

@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import localFont from 'next/font/local';
 import bgImage from '../public/backpic.png';
+import { Toaster } from 'react-hot-toast';
 
 
 const sekuya = localFont({
@@ -61,6 +62,7 @@ export default function RootLayout({
   style={{ backgroundImage: `url(${bgImage.src})` }}
 >
 
+        <Toaster position="top-center" reverseOrder={false} />
         <Navbar />
         <main className="min-h-dvh pt-16 ">{children}</main>
         <Footer />

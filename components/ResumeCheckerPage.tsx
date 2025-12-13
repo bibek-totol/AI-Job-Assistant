@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import SectionTitle from '@/components/SectionTitle';
 import FileUpload from '@/components/FileUpload';
 import Button from '@/components/Button';
@@ -17,6 +18,7 @@ export default function ResumeChecker() {
     if (!file) return;
     
     setIsAnalyzing(true);
+    const loadingToast = toast.loading('Analyzing your resume...');
     
     try {
       const formData = new FormData();
@@ -34,9 +36,10 @@ export default function ResumeChecker() {
 
       const data = await response.json();
       setResults(data);
+      toast.success('Resume analyzed successfully!', { id: loadingToast });
     } catch (error) {
       console.error('Error analyzing resume:', error);
-      alert('Failed to analyze resume. Please try again.');
+      toast.error('Failed to analyze resume. Please try again.', { id: loadingToast });
     } finally {
       setIsAnalyzing(false);
     }
@@ -72,8 +75,10 @@ export default function ResumeChecker() {
 
             {file && (
               <div className="mt-6">
-                <Button onClick={handleAnalyze} className="w-full" size="lg">
-                  Analyze Resume
+                <Button disabled={isAnalyzing} onClick={handleAnalyze} className= {`w-full ${isAnalyzing ? 'cursor-not-allowed' : 'cursor-pointer'}`}size="lg">
+                  {
+                    isAnalyzing ? 'Analyzing...' : 'Analyze Resume'
+                  }
                 </Button>
               </div>
             )}
@@ -122,6 +127,7 @@ export default function ResumeChecker() {
                   setResults(null);
                   setFile(null);
                   setJobDescription('');
+                  toast.success('Ready for a new analysis!');
                 }}
               >
                 Analyze Another Resume
