@@ -89,7 +89,7 @@ export default function Courses() {
 
         {courses.length === 0 ? (
           <div className="max-w-4xl mx-auto">
-            <div className="bg-[#4B3C70]/80 rounded-2xl shadow-lg p-8">
+            <div className="bg-violet-600/20 border-2 border-white rounded-2xl shadow-lg p-8">
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-4">

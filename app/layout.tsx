@@ -58,7 +58,7 @@ export default function RootLayout({
   return (
     <html lang="en">
        <body
-  className={`${sekuya.className} bg-contain bg-repeat  bg-center  min-h-screen`}
+  className={`${sekuya.className} bg-contain bg-repeat     min-h-screen`}
   style={{ backgroundImage: `url(${bgImage.src})` }}
 >
 

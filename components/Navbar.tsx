@@ -1,11 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import logo from '../public/Screenshot_40.jpg';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
 
   const navLinks = [
     { href: '/resume-checker', label: 'Resume Checker' },
@@ -29,18 +31,25 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-slate-100 hover:text-indigo-600 transition-colors duration-200 font-medium"
-              >
-                {link.label}
-              </Link>
-            ))}
-            <button className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`transition-colors duration-200 font-medium ${
+                    isActive 
+                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full px-4 py-2 font-bold' 
+                      : 'text-slate-100 hover:text-black'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+            {/* <button className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105">
               Get Started
-            </button>
+            </button> */}
           </div>
 
           {/* Mobile Menu Button */}
@@ -78,19 +87,26 @@ export default function Navbar() {
       {isOpen && (
         <div className="md:hidden glass border-t border-white/10">
           <div className="px-4 py-4 space-y-3">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 rounded-lg transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <button className="w-full px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full hover:shadow-lg transition-all">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`block px-4 py-2 rounded-lg transition-colors ${
+                    isActive
+                      ? 'bg-indigo-50 text-indigo-600 font-semibold'
+                      : 'text-gray-700 hover:bg-indigo-50'
+                  }`}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+            {/* <button className="w-full px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full hover:shadow-lg transition-all">
               Get Started
-            </button>
+            </button> */}
           </div>
         </div>
       )}

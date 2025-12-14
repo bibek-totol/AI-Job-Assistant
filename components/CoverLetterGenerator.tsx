@@ -52,7 +52,7 @@ export default function CoverLetterGenerator() {
         </SectionTitle>
 
         {!generatedLetter ? (
-          <div className="bg-[#4B3C70]/80 rounded-2xl shadow-lg p-8 space-y-8">
+          <div className="bg-violet-600/20 border-2 border-white rounded-2xl shadow-lg p-8 space-y-8">
             
             {/* CV Upload Section */}
             <div>

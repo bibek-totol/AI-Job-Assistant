@@ -74,7 +74,7 @@ export default function SalaryEstimator() {
         </SectionTitle>
 
         {!estimate ? (
-          <div className="bg-[#4B3C70]/80 rounded-2xl shadow-lg p-8">
+          <div className="bg-violet-600/20 border-2 border-white rounded-2xl shadow-lg p-8">
             <div className="space-y-6">
               <Input
                 label="Job Title"

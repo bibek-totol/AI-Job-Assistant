@@ -68,16 +68,16 @@ const PricingPage = () => {
   ];
 
   return (
-    <div className="min-h-screen  bg-gradient-to-b from-accent/30 via-background to-background">
+    <div className="min-h-screen  ">
 
       
       <main className="container mx-auto px-4 py-16 lg:py-24">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <h1 className="text-4xl lg:text-5xl font-bold text-foreground font-serif mb-4">
-            Choose Your <span className="text-primary">Career Plan</span>
+        <div className="text-center max-w-3xl mx-auto mb-4">
+          <h1 className="text-4xl lg:text-5xl font-bold text-white font-serif mb-4">
+            Choose Your Career Plan
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-lg text-gray-200">
             Unlock AI-powered tools to accelerate your job search and career growth.
           </p>
         </div>
@@ -120,7 +120,7 @@ const PricingPage = () => {
             return (
               <div
                 key={index}
-                className={`relative bg-card rounded-2xl p-8 border-2 transition-all hover:shadow-xl ${
+                className={`relative bg-violet-600/20 rounded-2xl p-8 border-2 transition-all hover:shadow-xl ${
                   plan.popular
                     ? "border-primary shadow-lg shadow-primary/10"
                     : "border-border hover:border-primary/50"
