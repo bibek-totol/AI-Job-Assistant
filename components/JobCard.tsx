@@ -5,6 +5,7 @@ interface JobCardProps {
   salary: string;
   type: string;
   matchReason?: string;
+  link?: string;
 }
 
 export default function JobCard({
@@ -14,6 +15,7 @@ export default function JobCard({
   salary,
   type,
   matchReason,
+  link = '#',
 }: JobCardProps) {
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 card-hover">
@@ -75,9 +77,14 @@ export default function JobCard({
         </div>
       )}
 
-      <button className="mt-4 w-full px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
+      <a 
+        href={link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-4 block w-full text-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
+      >
         View Details
-      </button>
+      </a>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import SectionTitle from '@/components/SectionTitle';
 import Textarea from '@/components/Textarea';
 import Select from '@/components/Select';
@@ -16,6 +17,8 @@ export default function JobSuggestion() {
   const [jobs, setJobs] = useState<any[]>([]);
 
   const countries = [
+    { value: 'bd', label: 'Bangladesh' },
+    { value: 'in', label: 'India' },
     { value: 'us', label: 'United States' },
     { value: 'uk', label: 'United Kingdom' },
     { value: 'ca', label: 'Canada' },
@@ -30,63 +33,48 @@ export default function JobSuggestion() {
     { value: 'senior', label: 'Senior (6+ years)' },
   ];
 
-  const mockJobs = [
-    {
-      title: 'Senior Frontend Developer',
-      company: 'TechCorp Inc.',
-      location: 'San Francisco, CA (Remote)',
-      salary: '$120,000 - $160,000',
-      type: 'Full-time',
-      matchReason: 'Your React and TypeScript skills align perfectly with this role. The company values remote work, matching your preferences.',
-    },
-    {
-      title: 'Full Stack Engineer',
-      company: 'Innovation Labs',
-      location: 'New York, NY',
-      salary: '$130,000 - $170,000',
-      type: 'Full-time',
-      matchReason: 'Your experience with Next.js and Node.js makes you an ideal candidate. The startup culture matches your career goals.',
-    },
-    {
-      title: 'React Developer',
-      company: 'Digital Solutions Co.',
-      location: 'Austin, TX (Hybrid)',
-      salary: '$110,000 - $145,000',
-      type: 'Contract',
-      matchReason: 'Perfect match for your frontend expertise. The hybrid model offers flexibility while maintaining team collaboration.',
-    },
-    {
-      title: 'Lead Software Engineer',
-      company: 'Future Tech',
-      location: 'Seattle, WA',
-      salary: '$150,000 - $190,000',
-      type: 'Full-time',
-      matchReason: 'Leadership opportunities align with your career progression. Your technical stack is a 95% match with their requirements.',
-    },
-    {
-      title: 'Frontend Architect',
-      company: 'Scale Systems',
-      location: 'Boston, MA (Remote)',
-      salary: '$140,000 - $180,000',
-      type: 'Full-time',
-      matchReason: 'Your architectural experience and passion for scalable systems make this an excellent fit for your next career move.',
-    },
-    {
-      title: 'UI/UX Engineer',
-      company: 'Design First Inc.',
-      location: 'Los Angeles, CA',
-      salary: '$115,000 - $150,000',
-      type: 'Full-time',
-      matchReason: 'Combines your technical skills with design sensibility. The company culture emphasizes work-life balance.',
-    },
-  ];
+ 
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
+    if (!preferences) {
+      toast.error('Please enter your job preferences');
+      return;
+    }
+
     setIsSearching(true);
-    setTimeout(() => {
-      setJobs(mockJobs);
+    const loadingToast = toast.loading('Searching for the latest jobs...');
+
+    try {
+      const response = await fetch('/api/job-suggestions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          preferences,
+          country,
+          experience,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch jobs');
+      }
+
+      const data = await response.json();
+      setJobs(data.jobs || []);
+      
+      if (data.jobs?.length > 0) {
+        toast.success(`Found ${data.jobs.length} jobs!`, { id: loadingToast });
+      } else {
+        toast.error('No jobs found matching your criteria', { id: loadingToast });
+      }
+    } catch (error) {
+      console.error('Error searching jobs:', error);
+      toast.error('Failed to search for jobs', { id: loadingToast });
+    } finally {
       setIsSearching(false);
-    }, 2000);
+    }
   };
 
   return (
@@ -122,7 +110,7 @@ export default function JobSuggestion() {
               />
             </div>
 
-            <Button onClick={handleSearch} className="w-full" size="lg">
+            <Button onClick={handleSearch} className="w-full cursor-pointer" size="lg">
               Find Matching Jobs
             </Button>
           </div>
