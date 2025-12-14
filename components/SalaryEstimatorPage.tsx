@@ -10,7 +10,7 @@ import Card from '@/components/Card';
 export default function SalaryEstimator() {
   const [jobTitle, setJobTitle] = useState('');
   const [experience, setExperience] = useState('mid');
-  const [country, setCountry] = useState('us');
+  const [country, setCountry] = useState('bd');
   const [isEstimating, setIsEstimating] = useState(false);
   const [estimate, setEstimate] = useState<any>(null);
 
@@ -22,6 +22,7 @@ export default function SalaryEstimator() {
   ];
 
   const countries = [
+    { value: 'bd', label: 'Bangladesh' },
     { value: 'us', label: 'United States' },
     { value: 'uk', label: 'United Kingdom' },
     { value: 'ca', label: 'Canada' },
@@ -98,7 +99,7 @@ export default function SalaryEstimator() {
 
               <Button
                 onClick={handleEstimate}
-                className="w-full"
+                className="w-full cursor-pointer"
                 size="lg"
                 disabled={!jobTitle || isEstimating}
               >

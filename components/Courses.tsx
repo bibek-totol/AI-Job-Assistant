@@ -1,6 +1,8 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import SectionTitle from '@/components/SectionTitle';
 import Textarea from '@/components/Textarea';
 import Button from '@/components/Button';
@@ -11,75 +13,58 @@ import SkeletonLoader from '@/components/SkeletonLoader';
 interface Course {
   title: string;
   platform: string;
-  difficulty: string;
   duration: string;
   reason: string;
-  url: string;
+  platformUrl: string;
+  difficultyLevel: string;
 }
 
 export default function Courses() {
+  const router = useRouter();
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [jobGoal, setJobGoal] = useState('');
+  const [country, setCountry] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [courses, setCourses] = useState<Course[]>([]);
 
-  const mockCourses: Course[] = [
-    {
-      title: 'Advanced React Patterns',
-      platform: 'Udemy',
-      difficulty: 'Advanced',
-      duration: '12 hours',
-      reason: 'Strengthen your React skills with advanced patterns and best practices',
-      url: '#',
-    },
-    {
-      title: 'TypeScript: The Complete Developer\'s Guide',
-      platform: 'Udemy',
-      difficulty: 'Intermediate',
-      duration: '24 hours',
-      reason: 'Essential for modern frontend development, missing from your current skillset',
-      url: '#',
-    },
-    {
-      title: 'AWS Certified Solutions Architect',
-      platform: 'Coursera',
-      difficulty: 'Advanced',
-      duration: '40 hours',
-      reason: 'Cloud skills are highly sought after in your target roles',
-      url: '#',
-    },
-    {
-      title: 'System Design Interview Prep',
-      platform: 'Educative',
-      difficulty: 'Advanced',
-      duration: '15 hours',
-      reason: 'Critical for senior-level positions you\'re targeting',
-      url: '#',
-    },
-    {
-      title: 'Docker & Kubernetes: The Complete Guide',
-      platform: 'Udemy',
-      difficulty: 'Intermediate',
-      duration: '22 hours',
-      reason: 'DevOps knowledge will make you a more well-rounded engineer',
-      url: '#',
-    },
-    {
-      title: 'Data Structures and Algorithms',
-      platform: 'LeetCode',
-      difficulty: 'All Levels',
-      duration: 'Self-paced',
-      reason: 'Essential for technical interviews at top companies',
-      url: '#',
-    },
-  ];
+ 
+  const handleAnalyze = async () => {
+    if (!country) {
+      toast.error('Please select a country');
+      return;
+    }
 
-  const handleAnalyze = () => {
     setIsAnalyzing(true);
-    setTimeout(() => {
-      setCourses(mockCourses);
+    const loadingToast = toast.loading('Getting course recommendations...');
+
+    try {
+      const formData = new FormData();
+      if (resumeFile) {
+        formData.append('file', resumeFile);
+      }
+      formData.append('jobGoal', jobGoal);
+      formData.append('country', country);
+
+      const response = await fetch('/api/recommend-courses', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get course recommendations');
+      }
+
+      const data = await response.json();
+      setCourses(data.courses || []);
+      toast.success('Course recommendations generated!', { id: loadingToast });
+    } catch (error) {
+      console.error('Error getting course recommendations:', error);
+      toast.error('Failed to get course recommendations. Showing fallback courses.', { id: loadingToast });
+      router.push('/courses');
+    
+    } finally {
       setIsAnalyzing(false);
-    }, 2000);
+    }
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -107,7 +92,7 @@ export default function Courses() {
             <div className="bg-[#4B3C70]/80 rounded-2xl shadow-lg p-8">
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  <h3 className="text-lg font-semibold text-white mb-4">
                     Choose one option:
                   </h3>
                   <FileUpload
@@ -117,7 +102,7 @@ export default function Courses() {
                   />
                 </div>
 
-                <div className="text-center text-gray-500">OR</div>
+                <div className="text-center text-gray-300">OR</div>
 
                 <Textarea
                   label="Describe Your Career Goals"
@@ -127,11 +112,29 @@ export default function Courses() {
                   rows={4}
                 />
 
+                <div>
+                  <label htmlFor="country" className="block text-sm font-medium text-white mb-2">
+                    Country *
+                  </label>
+                  <select
+                    id="country"
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border border-purple-300/30 bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 backdrop-blur-sm"
+                    required
+                  >
+                    <option value="" className="text-gray-500">Select a country</option>
+                    <option value="Bangladesh" className="text-gray-500">Bangladesh</option>
+                    <option value="India" className="text-gray-500">India</option>
+                    <option value="Europe" className="text-gray-500">Europe</option>
+                  </select>
+                </div>
+
                 <Button
                   onClick={handleAnalyze}
-                  className="w-full"
+                  className="w-full cursor-pointer"
                   size="lg"
-                  disabled={(!resumeFile && !jobGoal) || isAnalyzing}
+                  disabled={(!resumeFile && !jobGoal) || !country || isAnalyzing}
                 >
                   {isAnalyzing ? 'Analyzing...' : 'Get Course Recommendations'}
                 </Button>
@@ -146,13 +149,21 @@ export default function Courses() {
           </div>
         ) : (
           <div>
-            <div className="mb-8 flex justify-between items-center">
-              <div>
-                <h3 className="text-2xl font-bold text-gray-900">
+            <div className="mb-2 flex justify-between items-center">
+              <div className='border-2 bg-white border-white p-3 rounded-4xl'>
+                {/* <h3 className="text-2xl font-bold text-white">
                   Recommended Courses
-                </h3>
-                <p className="text-gray-600">
+                </h3> */}
+
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  Recommended Courses
+                </h1>
+
+                <p className="text-gray-500">
                   {courses.length} courses tailored to your career path
+                </p>
+                <p className="text-sm text-indigo-600 font-medium mt-1">
+                  📍 Country: {country}
                 </p>
               </div>
               <Button
@@ -161,13 +172,15 @@ export default function Courses() {
                   setCourses([]);
                   setResumeFile(null);
                   setJobGoal('');
+                  setCountry('');
                 }}
+                className='cursor-pointer bg-white'
               >
                 Start Over
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
               {courses.map((course, index) => (
                 <Card key={index}>
                   <div className="flex items-start justify-between mb-4">
@@ -187,12 +200,8 @@ export default function Courses() {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">Difficulty:</span>
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(
-                          course.difficulty
-                        )}`}
-                      >
-                        {course.difficulty}
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getDifficultyColor(course.difficultyLevel)}`}>
+                        {course.difficultyLevel}
                       </span>
                     </div>
                   </div>
@@ -204,9 +213,14 @@ export default function Courses() {
                     <p className="text-sm text-indigo-700">{course.reason}</p>
                   </div>
 
-                  <button className="w-full px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
+                  <a 
+                    href={course.platformUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="cursor-pointer block text-center w-full px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
+                  >
                     View Course
-                  </button>
+                  </a>
                 </Card>
               ))}
             </div>
