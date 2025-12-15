@@ -1,6 +1,6 @@
-# AI Job Assistant - Frontend Application
+# AI Job Assistant (Still Developing)
 
-A modern, premium-quality frontend application for an AI-powered job assistance platform built with Next.js, TypeScript, and Tailwind CSS.
+A modern, premium-quality frontend application for an AI-powered job assistance platform built with Next.js, TypeScript, Openrouter and Tailwind CSS.
 
 ##  Features
 
@@ -35,68 +35,69 @@ A modern, premium-quality frontend application for an AI-powered job assistance 
 - Course difficulty levels
 - Platform and duration details
 
-### 6. **Salary Estimator** (`/salary-estimator`)
-- AI-driven salary insights
-- Salary range calculations
-- Market trend analysis
-- Country and experience-based estimates
+### 6. **Cover Letter Creation ** (`/generate-cover-letter`)
+- AI-driven cover letter  generation
+- Customize Cover Letter
+
+ ### 6. **Pricing and Contact Us Section** 
+- Pricing for different plans of subscription
+- Contact Page for Additional Information
+
+### Installation
+
+1. Clone repository:
+```bash
+git clone https://github.com/bibek-totol/AI-Job-Assistant.git
+cd AI-Job-Assistant
+```
+
+2. Copy environment file
+```bash
+cp .env.example .env
+```
+
+3.  Fill in your environment variables in .env
+
+4. Running Locally with Docker:
+```bash
+docker-compose up --build 
+```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
+
+6.  If you want to stop the docker container(Optional):
+```bash
+docker-compose down
+
+```
+
 
 ##  Design System
 
 
+## 📂 Project Structure
 
-### Components
-All components are reusable and follow a consistent design system:
-- `Navbar` - Responsive navigation with mobile menu
-- `Footer` - Comprehensive footer with links
-- `Button` - 3 variants (primary, secondary, outline)
-- `Card` - Modern card with hover effects
-- `Input` - Form input with label and error states
-- `Select` - Dropdown with label support
-- `Textarea` - Multi-line text input
-- `FileUpload` - Drag-and-drop file upload
-- `JobCard` - Job listing display
-- `ATSScoreCard` - Resume analysis results
-- `GeneratedLinkBox` - Interview link and questions
-- `SkeletonLoader` - Loading state component
-- `SectionTitle` - Consistent page headings
 
-## 📁 Project Structure
+```text
+app/
+├── api/                        # Backend API routes
+│   ├── analyze-resume/         # Resume analysis endpoint
+│   ├── generate-cover-letter/  # Cover letter generation endpoint
+│   ├── job-suggestions/        # Job recommendation endpoint
+│   └── recommend-courses/      # Course recommendation endpoint
+├── contact/                    # Contact Us page
+├── courses/                    # Course recommendations page
+├── cover-letter/               # Cover letter generator page
+├── interview/                  # AI Interview practice page
+├── interview-scheduler/        # Interview scheduling page
+├── job-suggestions/            # Job suggestions page
+├── pricing/                    # Pricing and plans page
+├── resume-checker/             # Resume analysis page
+├── favicon.ico                 # Application favicon
+├── globals.css                 # Global styles and Tailwind imports
+├── layout.tsx                  # Root layout (Navbar, Footer, Fonts)
+└── page.tsx                    # Landing page (Home)
 
-```
-ai-job-assistant/
-├── app/
-│   ├── courses/
-│   │   └── page.tsx
-│   ├── interview/
-│   │   └── [id]/
-│   │       └── page.tsx
-│   ├── interview-scheduler/
-│   │   └── page.tsx
-│   ├── job-suggestions/
-│   │   └── page.tsx
-│   ├── resume-checker/
-│   │   └── page.tsx
-│   ├── salary-estimator/
-│   │   └── page.tsx
-│   ├── globals.css
-│   ├── layout.tsx
-│   └── page.tsx (Landing Page)
-├── components/
-│   ├── ATSScoreCard.tsx
-│   ├── Button.tsx
-│   ├── Card.tsx
-│   ├── FileUpload.tsx
-│   ├── Footer.tsx
-│   ├── GeneratedLinkBox.tsx
-│   ├── Input.tsx
-│   ├── JobCard.tsx
-│   ├── Navbar.tsx
-│   ├── Select.tsx
-│   ├── SectionTitle.tsx
-│   ├── SkeletonLoader.tsx
-│   └── Textarea.tsx
-└── public/
 ```
 
 ## 🛠️ Tech Stack
@@ -104,8 +105,9 @@ ai-job-assistant/
 - **Framework**: Next.js 16 (App Router)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
-- **Font**: Inter (Google Fonts)
-- **Icons**: SVG (inline)
+- **Font**: Next Google Fonts
+- **Icons**: Lucide  React
+- **API**: Open Router LLM (AI)
 
 ## 🚦 Getting Started
 
@@ -113,24 +115,7 @@ ai-job-assistant/
 - Node.js 18+ 
 - npm or yarn
 
-### Installation
 
-1. Navigate to project directory:
-```bash
-cd ai-job-assistant
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Run development server:
-```bash
-npm run dev
-```
-
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ## 📄 Pages & Routes
 
@@ -142,7 +127,11 @@ npm run dev
 | `/interview-scheduler` | Schedule AI interviews with auto-generated questions |
 | `/interview/[id]` | Dynamic interview entry page for candidates |
 | `/courses` | Personalized course recommendations |
-| `/salary-estimator` | Salary estimation tool |
+| ` /generate-cover-letter` | Cover Letter Creation |
+| ` /pricing` | Price Subscription |
+| ` /contact` | Contact with Us |
+
+
 
 ##  Key Features
 
@@ -158,13 +147,6 @@ npm run dev
 - Glassmorphism effects
 - Loading states with skeleton loaders
 
-### Mock Data
-All features include realistic mock data for demonstration:
-- ATS scores and feedback
-- Job listings with match reasons
-- Interview questions for different types
-- Course recommendations
-- Salary estimates
 
 
 
@@ -178,18 +160,11 @@ npm start
 ## 📦 Future Integration
 
 This frontend is ready for backend integration:
-- File upload endpoints
-- AI analysis APIs
-- Job search APIs
 - Interview scheduling
 - Vapi voice/video integration
-- Course recommendation API
 - Salary data API
 
 
 
 
 
-
-
-**Built with ❤️ using Next.js, TypeScript, and Tailwind CSS**
