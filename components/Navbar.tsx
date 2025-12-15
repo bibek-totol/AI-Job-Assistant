@@ -14,7 +14,6 @@ export default function Navbar() {
     { href: '/job-suggestions', label: 'Job Search' },
     { href: '/interview-scheduler', label: 'Interview' },
     { href: '/courses', label: 'Courses' },
-    { href: '/salary-estimator', label: 'Salary' },
     { href: '/cover-letter', label: 'Cover Letter' },
   ];
 
@@ -47,9 +46,9 @@ export default function Navbar() {
                 </Link>
               );
             })}
-            {/* <button className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105">
-              Get Started
-            </button> */}
+            <Link href="/contact" className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105">
+              Contact Us
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -104,9 +103,9 @@ export default function Navbar() {
                 </Link>
               );
             })}
-            {/* <button className="w-full px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full hover:shadow-lg transition-all">
-              Get Started
-            </button> */}
+            <Link href="/contact" className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105">
+              Contact Us
+            </Link>
           </div>
         </div>
       )}

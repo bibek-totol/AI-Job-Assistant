@@ -88,7 +88,7 @@ export default function JobSuggestion() {
           <div className="space-y-6 ">
             <Textarea
               label="Resume Summary / Job Preferences"
-              placeholder="Describe your skills, experience, and what you're looking for..."
+              placeholder="Describe your skills, experience, or what you're looking for..."
               value={preferences}
               onChange={(e) => setPreferences(e.target.value)}
               rows={4}
