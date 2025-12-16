@@ -7,6 +7,7 @@ import Textarea from '@/components/Textarea';
 import Select from '@/components/Select';
 import Button from '@/components/Button';
 import GeneratedLinkBox from '@/components/GeneratedLinkBox';
+import toast from 'react-hot-toast';
 
 export default function InterviewScheduler() {
   const [jobTitle, setJobTitle] = useState('');
@@ -27,70 +28,43 @@ export default function InterviewScheduler() {
     { value: 'mock', label: 'Mock Interview' },
   ];
 
-  const mockQuestions = {
-    technical: [
-      'Explain the difference between let, const, and var in JavaScript',
-      'What is the Virtual DOM and how does React use it?',
-      'How would you optimize the performance of a React application?',
-      'Explain the concept of closures in JavaScript',
-      'What are the differences between SQL and NoSQL databases?',
-      'Describe your experience with version control systems',
-      'How do you approach debugging a complex application?',
-      'What is your preferred testing strategy?',
-      'Explain the concept of RESTful APIs',
-      'How do you ensure code quality in your projects?',
-      'What design patterns have you used in your work?',
-      'How do you stay updated with new technologies?',
-      'Describe a challenging technical problem you solved',
-      'What is your experience with CI/CD pipelines?',
-      'How do you approach code reviews?',
-    ],
-    behavioral: [
-      'Tell me about a time you faced a significant challenge at work',
-      'Describe a situation where you had to work with a difficult team member',
-      'How do you prioritize tasks when managing multiple deadlines?',
-      'Give an example of when you showed leadership',
-      'Describe a time you failed and what you learned from it',
-      'How do you handle constructive criticism?',
-      'Tell me about a project you\'re most proud of',
-      'How do you adapt to changes in project requirements?',
-      'Describe your ideal work environment',
-      'How do you handle stress and pressure?',
-      'Give an example of when you went above and beyond',
-      'How do you approach learning new skills?',
-      'Describe a time you had to make a difficult decision',
-      'How do you handle conflicts in a team setting?',
-      'What motivates you in your career?',
-    ],
-    mock: [
-      'Tell me about yourself and your background',
-      'Why are you interested in this position?',
-      'What are your greatest strengths and weaknesses?',
-      'Where do you see yourself in 5 years?',
-      'Why should we hire you?',
-      'Describe your experience with [relevant technology]',
-      'How do you handle tight deadlines?',
-      'What is your preferred work style?',
-      'Tell me about a successful project you completed',
-      'How do you handle failure?',
-      'What interests you about our company?',
-      'Describe your leadership style',
-      'How do you approach problem-solving?',
-      'What are your salary expectations?',
-      'Do you have any questions for us?',
-    ],
-  };
+  
 
-  const handleSchedule = () => {
+  const handleSchedule = async () => {
+    const toastId = toast.loading('Generating questions...');
     setIsGenerating(true);
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/generate-questions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          jobTitle,
+          jobDescription,
+          interviewType,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate questions');
+      }
+
+      const data = await response.json();
+      toast.success('Questions generated successfully!', { id: toastId });
+      
       const randomId = Math.random().toString(36).substring(7);
+      
       setGeneratedData({
         link: `${window.location.origin}/interview/${randomId}`,
-        questions: mockQuestions[interviewType as keyof typeof mockQuestions],
+        questions: data.questions,
       });
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Failed to generate questions', { id: toastId });
+    } finally {
       setIsGenerating(false);
-    }, 2000);
+    }
   };
 
   return (
@@ -101,7 +75,7 @@ export default function InterviewScheduler() {
         </SectionTitle>
 
         {!generatedData ? (
-          <div className="bg-purple-600/20 rounded-2xl shadow-lg p-8">
+          <div className="bg-violet-600/30 rounded-2xl shadow-lg p-8">
             <div className="space-y-6">
               <Input
                 label="Job Title"
@@ -134,7 +108,7 @@ export default function InterviewScheduler() {
 
               <Button
                 onClick={handleSchedule}
-                className="w-full"
+                className="w-full cursor-pointer"
                 size="lg"
                 disabled={!jobTitle || !jobDescription || !interviewTime || isGenerating}
               >
@@ -172,7 +146,8 @@ export default function InterviewScheduler() {
             />
             <div className="mt-6 text-center">
               <Button
-                variant="outline"
+              
+                className='cursor-pointer   bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full hover:shadow-lg transition-all duration-300 hover:scale-110'
                 onClick={() => {
                   setGeneratedData(null);
                   setJobTitle('');
