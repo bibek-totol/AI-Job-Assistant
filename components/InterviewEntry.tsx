@@ -5,6 +5,7 @@ import SectionTitle from '@/components/SectionTitle';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
+import InterviewSession from '@/components/InterviewSession';
 
 interface InterviewEntryProps {
   id: string;
@@ -14,28 +15,37 @@ export default function InterviewEntry({ id }: InterviewEntryProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [isStarting, setIsStarting] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
 
   const handleStartInterview = () => {
     setIsStarting(true);
-    // This would later integrate with Vapi or similar service
+    // Simulate connection delay
     setTimeout(() => {
-      alert('Interview would start here! (Vapi integration placeholder)');
       setIsStarting(false);
-    }, 1000);
+      setHasStarted(true);
+    }, 1500);
   };
 
+  const handleEndInterview = () => {
+    setHasStarted(false);
+    setName('');
+    setEmail('');
+  };
+
+  if (hasStarted) {
+    return <InterviewSession  hasStarted={hasStarted} onEnd={handleEndInterview} />;
+  }
+
   return (
-    <div className="min-h-screen gradient-bg py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-      <div className="max-w-2xl w-full">
+    <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+      <div className="max-w-2xl w-full ">
         <Card>
           <div className="text-center mb-8">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white text-2xl">
-              🎤
-            </div>
+            
             <SectionTitle center subtitle="Please enter your details to begin">
               AI Interview Session
             </SectionTitle>
-            <p className="text-sm text-gray-500">Interview ID: {id}</p>
+            <p className="text-sm text-gray-300">Interview ID: {id}</p>
           </div>
 
           <div className="space-y-6">
@@ -78,7 +88,7 @@ export default function InterviewEntry({ id }: InterviewEntryProps) {
 
             <Button
               onClick={handleStartInterview}
-              className="w-full"
+              className="w-full cursor-pointer hover:scale-105 transition-all  "
               size="lg"
               disabled={!name || !email || isStarting}
             >

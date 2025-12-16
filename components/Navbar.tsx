@@ -11,11 +11,12 @@ export default function Navbar() {
 
   const navLinks = [
     { href: '/resume-checker', label: 'Resume Checker' },
+    { href: '/interview-scheduler', label: 'Interview' },
     { href: '/job-suggestions', label: 'Job Search' },
    
     { href: '/courses', label: 'Courses' },
     { href: '/cover-letter', label: 'Cover Letter' },
-     { href: '/interview-scheduler', label: 'Interview' },
+     
   ];
 
   return (
