@@ -94,14 +94,14 @@ export default function InterviewScheduler() {
   };
 
   return (
-    <div className="min-h-screen gradient-bg py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <SectionTitle center subtitle="Create AI-powered interview sessions with auto-generated questions">
           Interview Scheduler
         </SectionTitle>
 
         {!generatedData ? (
-          <div className="bg-white rounded-2xl shadow-lg p-8">
+          <div className="bg-purple-600/20 rounded-2xl shadow-lg p-8">
             <div className="space-y-6">
               <Input
                 label="Job Title"
