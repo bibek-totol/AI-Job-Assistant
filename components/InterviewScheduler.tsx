@@ -75,7 +75,7 @@ export default function InterviewScheduler() {
         </SectionTitle>
 
         {!generatedData ? (
-          <div className="bg-violet-600/30 rounded-2xl shadow-lg p-8">
+          <div className="bg-violet-600/30 border-2 border-white rounded-2xl shadow-lg p-8">
             <div className="space-y-6">
               <Input
                 label="Job Title"
