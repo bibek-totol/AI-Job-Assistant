@@ -75,6 +75,23 @@ docker-compose down
 ##  Design System
 
 
+## Project UI:
+![Screenshot_93](https://github.com/user-attachments/assets/ff72c969-4e9b-45c8-b895-fc6a87d807a0)
+![Screenshot_94](https://github.com/user-attachments/assets/ec3b5fd1-5a3a-4cba-9231-2c6cd035ada8)
+![Screenshot_82](https://github.com/user-attachments/assets/95efd252-bfab-446a-b164-fd4d89b7fdd7)
+![Screenshot_83](https://github.com/user-attachments/assets/93379779-9fe0-40c4-bad5-c99d5c18cf2e)
+![Screenshot_84](https://github.com/user-attachments/assets/b632a66f-5f55-4a33-b900-93da25e9b73b)
+![Screenshot_85](https://github.com/user-attachments/assets/3bb429fc-6aca-4238-9344-bb007a6c9a5a)
+![Screenshot_86](https://github.com/user-attachments/assets/8619760c-2d4a-4838-9085-8dba189de5c2)
+![Screenshot_87](https://github.com/user-attachments/assets/03764055-5ffa-4f84-8f59-925f755e45bb)
+![Screenshot_88](https://github.com/user-attachments/assets/c452773b-1338-4926-910b-10f13ca60646)
+![Screenshot_89](https://github.com/user-attachments/assets/1b08fca3-1f3d-45b4-b384-55a892539e28)
+![Screenshot_90](https://github.com/user-attachments/assets/7c5426f6-b031-4991-907d-925908e16d05)
+![Screenshot_91](https://github.com/user-attachments/assets/b23e5ee0-0d1f-44ed-ad44-0e79169b4ed0)
+![Screenshot_92](https://github.com/user-attachments/assets/9c394675-946d-4654-a055-72814933a901)
+
+
+
 ## 📂 Project Structure
 
 
