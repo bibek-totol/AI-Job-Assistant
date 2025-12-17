@@ -59,16 +59,20 @@ export default function RootLayout({
   return (
     <html lang="en">
        <body
-  className={`${sekuya.className} bg-contain bg-repeat     min-h-screen`}
+  className={`${sekuya.className} bg-contain bg-repeat backdrop-blur-md      min-h-screen`}
   style={{ backgroundImage: `url(${bgImage.src})` }}
 >
+
+  
 
         <Toaster position="top-center" reverseOrder={false} />
         <Navbar />
         <main className="min-h-dvh pt-16 ">{children}</main>
         <Footer />
         <ChatbotWidget />
+    
       </body>
+      
     </html>
   );
 }

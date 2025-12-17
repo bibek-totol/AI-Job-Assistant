@@ -78,13 +78,13 @@ export default function JobSuggestion() {
   };
 
   return (
-    <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
+    <div className="bg-[#4B3C70]/50 min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <SectionTitle center subtitle="AI-powered job matching based on your skills and preferences">
           Smart Job Search
         </SectionTitle>
 
-        <div className="bg-violet-600/20 border-2 border-white rounded-2xl shadow-lg p-8 mb-8">
+        <div className="bg-purple-950 border-2 border-white rounded-2xl shadow-lg p-8 mb-8">
           <div className="space-y-6 ">
             <Textarea
               label="Resume Summary / Job Preferences"

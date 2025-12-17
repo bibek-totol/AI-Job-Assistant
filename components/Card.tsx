@@ -12,7 +12,7 @@ export default function Card({ children, className = '', hover = true }: CardPro
   console.log(path);
   return (
     <div
-      className={`   ${path === '/courses' ? 'bg-white' : 'bg-violet-600/30'} rounded-2xl shadow-lg p-6 border-2 border-white ${
+      className={`   ${path === '/courses' ? 'bg-white' : 'bg-purple-950'} rounded-2xl shadow-lg p-6 border-2 border-white ${
         hover ? 'card-hover' : ''
       } ${className}`}
     >

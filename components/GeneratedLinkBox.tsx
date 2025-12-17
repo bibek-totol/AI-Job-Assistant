@@ -44,7 +44,7 @@ export default function GeneratedLinkBox({ link, questions }: GeneratedLinkBoxPr
   return (
     <div className="space-y-6">
       {/* Generated Link */}
-      <div className="bg-violet-600/30 border-2 border-white rounded-2xl shadow-lg p-6">
+      <div className="bg-purple-950 border-2 border-white rounded-2xl shadow-lg p-6">
         <h3 className="text-xl font-bold text-white mb-4">Generated Interview Link</h3>
         <div className="flex flex-col space-y-4">
           <div className="flex items-center space-x-2">
@@ -97,7 +97,7 @@ export default function GeneratedLinkBox({ link, questions }: GeneratedLinkBoxPr
       </div>
 
       {/* Generated Questions */}
-      <div className="bg-violet-600/30 border-2 border-white rounded-2xl shadow-lg p-6">
+      <div className="bg-purple-950 border-2 border-white rounded-2xl shadow-lg p-6">
         <h3 className="text-xl font-bold text-gray-100 mb-4">Generated Interview Questions</h3>
         <div className="space-y-3">
           {questions.map((question, index) => (

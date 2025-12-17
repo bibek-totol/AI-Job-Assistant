@@ -45,14 +45,14 @@ export default function CoverLetterGenerator() {
   };
 
   return (
-    <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
+    <div className="bg-[#4B3C70]/50 min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <SectionTitle center subtitle="Upload your CV and job description to generate a tailored cover letter">
           AI Cover Letter Generator
         </SectionTitle>
 
         {!generatedLetter ? (
-          <div className="bg-violet-600/20 border-2 border-white rounded-2xl shadow-lg p-8 space-y-8">
+          <div className="bg-purple-950 border-2 border-white rounded-2xl shadow-lg p-8 space-y-8">
             
             {/* CV Upload Section */}
             <div>

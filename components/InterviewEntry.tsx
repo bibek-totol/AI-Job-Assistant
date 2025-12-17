@@ -37,7 +37,7 @@ export default function InterviewEntry({ id }: InterviewEntryProps) {
   }
 
   return (
-    <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+    <div className="bg-[#4B3C70]/50 min-h-screen  py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
       <div className="max-w-2xl w-full ">
         <Card>
           <div className="text-center mb-8">

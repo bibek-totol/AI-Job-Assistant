@@ -81,7 +81,7 @@ export default function Courses() {
   };
 
   return (
-    <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
+    <div className="bg-[#4B3C70]/50 min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <SectionTitle center subtitle="Get personalized course recommendations based on your career goals">
           AI Course Recommendations
@@ -89,7 +89,7 @@ export default function Courses() {
 
         {courses.length === 0 ? (
           <div className="max-w-4xl mx-auto">
-            <div className="bg-violet-600/20 border-2 border-white rounded-2xl shadow-lg p-8">
+            <div className="bg-purple-950 border-2 border-white rounded-2xl shadow-lg p-8">
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-4">

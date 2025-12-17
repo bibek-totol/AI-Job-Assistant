@@ -46,14 +46,14 @@ export default function ResumeChecker() {
   };
 
   return (
-    <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8 ">
+    <div className="bg-[#4B3C70]/50   min-h-screen  py-12 px-4 sm:px-6 lg:px-8 ">
       <div className="max-w-4xl mx-auto">
         <SectionTitle  center subtitle="Get instant ATS analysis and personalized feedback">
           AI Resume Checker
         </SectionTitle>
 
         {!results ? (
-          <div className="bg-violet-600/20 border-2 border-white rounded-2xl shadow-lg p-8">
+          <div className="bg-purple-950 border-2 border-white rounded-2xl shadow-lg p-8">
             <FileUpload
               label="Upload Your Resume"
               accept=".pdf"
