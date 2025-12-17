@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import localFont from 'next/font/local';
 import bgImage from '../public/backpic.png';
 import { Toaster } from 'react-hot-toast';
+import ChatbotWidget from '@/components/ChatbotWidget';
 
 
 const sekuya = localFont({
@@ -66,6 +67,7 @@ export default function RootLayout({
         <Navbar />
         <main className="min-h-dvh pt-16 ">{children}</main>
         <Footer />
+        <ChatbotWidget />
       </body>
     </html>
   );

@@ -97,7 +97,7 @@ export default function GeneratedLinkBox({ link, questions }: GeneratedLinkBoxPr
       </div>
 
       {/* Generated Questions */}
-      <div className="bg-violet-600/30 rounded-2xl shadow-lg p-6">
+      <div className="bg-violet-600/30 border-2 border-white rounded-2xl shadow-lg p-6">
         <h3 className="text-xl font-bold text-gray-100 mb-4">Generated Interview Questions</h3>
         <div className="space-y-3">
           {questions.map((question, index) => (
