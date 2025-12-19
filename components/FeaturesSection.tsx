@@ -51,7 +51,7 @@ const FeaturesSection = () => {
             return (
               <div 
                 key={index} 
-                className="bg-violet-300 rounded-3xl p-6"
+                className="bg-slate-400 rounded-3xl p-6"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">

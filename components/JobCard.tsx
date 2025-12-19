@@ -18,13 +18,13 @@ export default function JobCard({
   link = '#',
 }: JobCardProps) {
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 card-hover">
+    <div className="bg-slate-400 rounded-2xl shadow-lg p-6 border border-gray-100 card-hover">
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="text-xl font-bold text-gray-900 mb-1">{title}</h3>
           <p className="text-gray-600">{company}</p>
         </div>
-        <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium">
+        <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-md  text-sm font-medium">
           {type}
         </span>
       </div>

@@ -3,7 +3,7 @@ import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import localFont from 'next/font/local';
-import bgImage from '../public/backpic.png';
+import bgImage from '../public/backpic2.jpg';
 import { Toaster } from 'react-hot-toast';
 import ChatbotWidget from '@/components/ChatbotWidget';
 
@@ -59,7 +59,7 @@ export default function RootLayout({
   return (
     <html lang="en">
        <body
-  className={`${sekuya.className} bg-contain bg-repeat backdrop-blur-md      min-h-screen`}
+  className={`${sekuya.className} bg-contain bg-repeat      min-h-screen`}
   style={{ backgroundImage: `url(${bgImage.src})` }}
 >
 
@@ -69,6 +69,8 @@ export default function RootLayout({
         <Navbar />
         <main className="min-h-dvh pt-16 ">{children}</main>
         <Footer />
+
+        
         <ChatbotWidget />
     
       </body>

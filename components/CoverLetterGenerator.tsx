@@ -45,14 +45,14 @@ export default function CoverLetterGenerator() {
   };
 
   return (
-    <div className="bg-[#4B3C70]/50 min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
+    <div className=" min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <SectionTitle center subtitle="Upload your CV and job description to generate a tailored cover letter">
           AI Cover Letter Generator
         </SectionTitle>
 
         {!generatedLetter ? (
-          <div className="bg-purple-950 border-2 border-white rounded-2xl shadow-lg p-8 space-y-8">
+          <div className="bg-slate-700 border-6 border-cyan-400 shadow-[0_0_100px_rgba(6,182,212,0.5)] backdrop-blur-sm rounded-2xl  p-8 space-y-8">
             
             {/* CV Upload Section */}
             <div>
@@ -82,7 +82,7 @@ export default function CoverLetterGenerator() {
             <div className="pt-4">
               <Button 
                 onClick={handleGenerate} 
-                className="w-full" 
+                className="w-full cursor-pointer" 
                 size="lg"
                 disabled={!file || !jobDescription || isGenerating}
               >
@@ -97,7 +97,7 @@ export default function CoverLetterGenerator() {
             )}
           </div>
         ) : (
-          <div className="bg-white rounded-2xl shadow-lg p-8">
+          <div className="bg-slate-400 rounded-2xl shadow-lg p-8">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-2xl font-bold text-gray-900">Generated Cover Letter</h3>
               <div className="flex gap-4">

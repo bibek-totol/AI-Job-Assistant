@@ -20,7 +20,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-0 w-full z-50 glass border-b border-white/10 text-[13px]">
+    <nav className="fixed top-0 w-full z-50 glass border-b border-white/10  md:text-[7px] lg:text-[11px] ">
       <div className="max-w-7xl mx-auto ">
         <div className="flex justify-between items-center h-16">
           <Link href="/" className="flex items-center space-x-2">

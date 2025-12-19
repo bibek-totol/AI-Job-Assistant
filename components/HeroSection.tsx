@@ -1,7 +1,9 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
+import roboimg from "../public/robot-removebg-preview.png"
 
 const HeroSection = () => {
   return (
@@ -52,13 +54,10 @@ const HeroSection = () => {
             <div className="relative w-full h-[500px] bg-transparent   rounded-3xl flex items-center justify-center overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
               <div className="text-center space-y-4 p-8">
-                <div className="w-32 h-32 mx-auto bg-primary/20 rounded-full flex items-center justify-center">
-                  <svg className="w-16 h-16 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M12 2a3 3 0 0 0-3 3v1H6a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-3V5a3 3 0 0 0-3-3z" />
-                    <circle cx="12" cy="13" r="2" />
-                    <path d="M7 13h2M15 13h2M9 17h6" />
-                  </svg>
-                </div>
+                
+                 <Image src={roboimg} alt="Logo"  fill
+    className="object-contain"  />
+               
                 {/* <h3 className="text-2xl font-bold text-foreground">AI-Powered Career Tools</h3>
                 <p className="text-muted-foreground">Smart assistance for every step of your job search</p> */}
               </div>

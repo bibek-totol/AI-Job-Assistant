@@ -44,7 +44,7 @@ body {
 }
 
 @utility gradient-text {
-  background: linear-gradient(to right, #4f46e5, #7c3aed, #db2777);
+  background: linear-gradient(to right, #AC1DF2, #AC1DF2, #db2777);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;

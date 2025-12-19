@@ -87,7 +87,7 @@ const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY as string);
   return (
     <div className="fixed inset-0 bg-gray-900 z-50 flex flex-col">
       {/* Header */}
-      <div className="bg-gray-800 px-6 py-4 flex justify-between items-center shadow-md">
+      <div className="bg-slate-700 px-6 py-4 flex justify-between items-center shadow-md">
         <div className="flex items-center space-x-2">
           <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
           <span className="text-white font-medium">Live Interview Session</span>
@@ -99,7 +99,7 @@ const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY as string);
       <div className="flex-1 flex flex-col md:flex-row p-4 gap-4 overflow-hidden">
         
         {/* Left Side: User */}
-        <div className="flex-1 bg-gray-800 rounded-2xl overflow-hidden relative border border-gray-700 shadow-2xl">
+        <div className="flex-1 bg-slate-700 rounded-2xl overflow-hidden relative border border-gray-700 shadow-2xl">
           <div className="absolute top-4 left-4 bg-black/50 px-3 py-1 rounded-full text-white text-sm z-10">
             You
           </div>
@@ -176,7 +176,7 @@ const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY as string);
       </div>
 
       {/* Controls Footer */}
-      <div className="bg-gray-800 p-6 flex justify-center items-center space-x-6">
+      <div className="bg-slate-700 p-6 flex justify-center items-center space-x-6">
         <button
           onClick={toggleMic}
           className={`p-4 rounded-full transition-all ${

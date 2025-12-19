@@ -46,7 +46,7 @@ const ServicesSection = () => {
   const ActiveIcon = services[activeService].icon;
 
   return (
-    <section className="py-20 bg-[#4B3C70]/60" id="services">
+    <section className="py-20 " id="services">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl lg:text-5xl text-gray-300 font-bold mb-4">Explore Our Services</h2>
