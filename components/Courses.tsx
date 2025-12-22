@@ -1,14 +1,15 @@
 'use client';
-
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import toast from 'react-hot-toast';
-import SectionTitle from '@/components/SectionTitle';
-import Textarea from '@/components/Textarea';
-import Button from '@/components/Button';
-import Card from '@/components/Card';
-import FileUpload from '@/components/FileUpload';
-import SkeletonLoader from '@/components/SkeletonLoader';
+ 
+ import { useRouter } from 'next/navigation';
+ import { useState } from 'react';
+ import toast from 'react-hot-toast';
+ import SectionTitle from '@/components/SectionTitle';
+ import Textarea from '@/components/Textarea';
+ import Button from '@/components/Button';
+ import Card from '@/components/Card';
+ import FileUpload from '@/components/FileUpload';
+ import SkeletonLoader from '@/components/SkeletonLoader';
+ import { motion } from 'framer-motion';
 
 interface Course {
   title: string;
@@ -81,7 +82,12 @@ export default function Courses() {
   };
 
   return (
-    <div className=" min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
+    <motion.div 
+      initial={{ y: 40, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className=" min-h-screen  py-12 px-4 sm:px-6 lg:px-8"
+    >
       <div className="max-w-7xl mx-auto">
         <SectionTitle center subtitle="Get personalized course recommendations based on your career goals">
           AI Course Recommendations
@@ -227,6 +233,6 @@ export default function Courses() {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

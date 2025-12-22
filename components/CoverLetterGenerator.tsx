@@ -1,11 +1,12 @@
 'use client';
-
-import { useState } from 'react';
-import toast from 'react-hot-toast';
-import SectionTitle from '@/components/SectionTitle';
-import FileUpload from '@/components/FileUpload';
-import Button from '@/components/Button';
-import SkeletonLoader from '@/components/SkeletonLoader';
+ 
+ import { useState } from 'react';
+ import toast from 'react-hot-toast';
+ import SectionTitle from '@/components/SectionTitle';
+ import FileUpload from '@/components/FileUpload';
+ import Button from '@/components/Button';
+ import SkeletonLoader from '@/components/SkeletonLoader';
+ import { motion } from 'framer-motion';
 
 export default function CoverLetterGenerator() {
   const [file, setFile] = useState<File | null>(null);
@@ -45,7 +46,12 @@ export default function CoverLetterGenerator() {
   };
 
   return (
-    <div className=" min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
+    <motion.div 
+      initial={{ y: 40, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className=" min-h-screen  py-12 px-4 sm:px-6 lg:px-8"
+    >
       <div className="max-w-4xl mx-auto">
         <SectionTitle center subtitle="Upload your CV and job description to generate a tailored cover letter">
           AI Cover Letter Generator
@@ -97,9 +103,9 @@ export default function CoverLetterGenerator() {
             )}
           </div>
         ) : (
-          <div className="bg-slate-400 rounded-2xl shadow-lg p-8">
+          <div className="mt-12 bg-transparent border-6 border-cyan-400 rounded-2xl shadow-lg p-8">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-bold text-gray-900">Generated Cover Letter</h3>
+              <h3 className="text-2xl font-bold text-gray-300">Generated Cover Letter</h3>
               <div className="flex gap-4">
                 <Button
                   variant="outline"
@@ -130,6 +136,6 @@ export default function CoverLetterGenerator() {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

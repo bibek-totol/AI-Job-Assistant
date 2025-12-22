@@ -1,5 +1,5 @@
 'use client';
-
+ 
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import SectionTitle from '@/components/SectionTitle';
@@ -7,6 +7,7 @@ import FileUpload from '@/components/FileUpload';
 import Button from '@/components/Button';
 import ATSScoreCard from '@/components/ATSScoreCard';
 import SkeletonLoader from '@/components/SkeletonLoader';
+import { motion } from 'framer-motion';
 
 export default function ResumeChecker() {
   const [file, setFile] = useState<File | null>(null);
@@ -46,7 +47,12 @@ export default function ResumeChecker() {
   };
 
   return (
-    <div className="  min-h-screen  py-12 px-4 sm:px-6 lg:px-8 ">
+    <motion.div 
+      initial={{ y: 40, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="  min-h-screen  py-12 px-4 sm:px-6 lg:px-8 "
+    >
       <div className="max-w-4xl mx-auto">
         <SectionTitle  center subtitle="Get instant ATS analysis and personalized feedback">
           AI Resume Checker
@@ -136,6 +142,6 @@ export default function ResumeChecker() {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

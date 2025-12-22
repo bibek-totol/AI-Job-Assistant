@@ -1,13 +1,14 @@
 'use client';
-
-import { useState } from 'react';
-import SectionTitle from '@/components/SectionTitle';
-import Input from '@/components/Input';
-import Textarea from '@/components/Textarea';
-import Select from '@/components/Select';
-import Button from '@/components/Button';
-import GeneratedLinkBox from '@/components/GeneratedLinkBox';
-import toast from 'react-hot-toast';
+ 
+ import { useState } from 'react';
+ import SectionTitle from '@/components/SectionTitle';
+ import Input from '@/components/Input';
+ import Textarea from '@/components/Textarea';
+ import Select from '@/components/Select';
+ import Button from '@/components/Button';
+ import GeneratedLinkBox from '@/components/GeneratedLinkBox';
+ import toast from 'react-hot-toast';
+ import { motion } from 'framer-motion';
 
 export default function InterviewScheduler() {
   const [jobTitle, setJobTitle] = useState('');
@@ -68,7 +69,12 @@ export default function InterviewScheduler() {
   };
 
   return (
-    <div className=" min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
+    <motion.div 
+      initial={{ y: 40, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className=" min-h-screen  py-12 px-4 sm:px-6 lg:px-8"
+    >
       <div className="max-w-4xl mx-auto">
         <SectionTitle center subtitle="Create AI-powered interview sessions with auto-generated questions">
           Interview Scheduler
@@ -161,6 +167,6 @@ export default function InterviewScheduler() {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

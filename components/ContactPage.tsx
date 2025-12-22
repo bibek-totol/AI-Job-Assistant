@@ -1,7 +1,8 @@
 'use client';
-
-import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, MessageSquare, Briefcase, FileText } from 'lucide-react';
+ 
+ import React, { useState } from 'react';
+ import { Mail, Phone, MapPin, Send, MessageSquare, Briefcase, FileText } from 'lucide-react';
+ import { motion } from 'framer-motion';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -24,7 +25,12 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen  pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+    <motion.div 
+      initial={{ y: 40, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen  pt-24 pb-12 px-4 sm:px-6 lg:px-8"
+    >
       {/* Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-500/20 rounded-full blur-3xl" />
@@ -183,6 +189,6 @@ export default function ContactPage() {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
