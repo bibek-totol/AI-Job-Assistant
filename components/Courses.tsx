@@ -120,13 +120,13 @@ export default function Courses() {
                     id="country"
                     value={country}
                     onChange={(e) => setCountry(e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg border border-purple-300/30 bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 backdrop-blur-sm"
+                    className="w-full px-4 py-3 rounded-lg border border-purple-300/30 bg-transparent text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 backdrop-blur-sm"
                     required
                   >
-                    <option value="" className="text-gray-500">Select a country</option>
-                    <option value="Bangladesh" className="text-gray-500">Bangladesh</option>
-                    <option value="India" className="text-gray-500">India</option>
-                    <option value="Europe" className="text-gray-500">Europe</option>
+                    <option value="" className="text-black">Select a country</option>
+                    <option value="Bangladesh" className="text-black">Bangladesh</option>
+                    <option value="India" className="text-black">India</option>
+                    <option value="Europe" className="text-black">Europe</option>
                   </select>
                 </div>
 
@@ -184,33 +184,33 @@ export default function Courses() {
               {courses.map((course, index) => (
                 <Card key={index}>
                   <div className="flex items-start justify-between mb-4">
-                    <h3 className="text-xl font-bold text-gray-900 flex-1">
+                    <h3 className="text-xl font-bold text-gray-400 flex-1">
                       {course.title}
                     </h3>
                   </div>
 
                   <div className="space-y-3 mb-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Platform:</span>
-                      <span className="font-medium text-gray-900">{course.platform}</span>
+                      <span className="text-sm text-gray-400">Platform:</span>
+                      <span className="font-medium text-gray-400">{course.platform}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Duration:</span>
-                      <span className="font-medium text-gray-900">{course.duration}</span>
+                      <span className="text-sm text-gray-400">Duration:</span>
+                      <span className="font-medium text-gray-400">{course.duration}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Difficulty:</span>
+                      <span className="text-sm text-cyan-400">Difficulty:</span>
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getDifficultyColor(course.difficultyLevel)}`}>
                         {course.difficultyLevel}
                       </span>
                     </div>
                   </div>
 
-                  <div className="p-4 bg-indigo-50 rounded-xl mb-4">
-                    <p className="text-sm font-medium text-indigo-900 mb-1">
+                  <div className="p-4 bg-cyan-100 text-cyan-700  rounded-xl mb-4">
+                    <p className="text-sm font-medium  mb-1">
                       Why this course:
                     </p>
-                    <p className="text-sm text-indigo-700">{course.reason}</p>
+                    <p className="text-sm ">{course.reason}</p>
                   </div>
 
                   <a 

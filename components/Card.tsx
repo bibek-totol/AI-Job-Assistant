@@ -7,14 +7,23 @@ interface CardProps {
   hover?: boolean;
 }
 
-export default function Card({ children, className = '', hover = true }: CardProps) {
-  const path = usePathname();
-  console.log(path);
+export default function Card({
+  children,
+  className = '',
+  hover = true,
+}: CardProps) {
+  const pathname = usePathname();
+
+  const hideBorder = pathname.startsWith('/interview/');
+
   return (
     <div
-      className={`   ${path === '/courses' ? 'bg-slate-400' : 'bg-slate-700'} rounded-2xl shadow-lg p-6 border-2 border-white ${
-        hover ? 'card-hover' : ''
-      } ${className}`}
+      className={`
+        bg-transparent rounded-2xl shadow-lg p-6
+        ${hideBorder ? '' : 'border-2 border-cyan-400'}
+        ${hover ? 'card-hover' : ''}
+        ${className}
+      `}
     >
       {children}
     </div>

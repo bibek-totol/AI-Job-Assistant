@@ -49,9 +49,12 @@ export function Navbar() {
 
           <div className="hidden md:flex items-center gap-3">
             
-            <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 cursor-pointeri hover:bg-primary/90 text-primary-foreground">
+            <Link href="/contact" >
+               <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 cursor-pointer hover:scale-110 hover:bg-primary/90 text-primary-foreground">
               Contact Us
             </Button>
+            </Link>
+           
           </div>
 
           <button

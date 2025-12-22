@@ -18,19 +18,19 @@ export default function JobCard({
   link = '#',
 }: JobCardProps) {
   return (
-    <div className="bg-slate-400 rounded-2xl shadow-lg p-6 border border-gray-100 card-hover">
+    <div className="bg-transparent rounded-2xl shadow-lg p-6 border-2 border-cyan-400 card-hover">
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="text-xl font-bold text-gray-900 mb-1">{title}</h3>
-          <p className="text-gray-600">{company}</p>
+          <h3 className="text-xl font-bold text-gray-300 mb-1">{title}</h3>
+          <p className="text-gray-300">{company}</p>
         </div>
-        <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-md  text-sm font-medium">
+        <span className="px-3 py-1 bg-cyan-100 text-cyan-700 rounded-md  text-sm font-medium">
           {type}
         </span>
       </div>
 
       <div className="space-y-2 mb-4">
-        <div className="flex items-center text-gray-600">
+        <div className="flex items-center text-gray-500">
           <svg
             className="w-5 h-5 mr-2"
             fill="none"
@@ -71,9 +71,9 @@ export default function JobCard({
       </div>
 
       {matchReason && (
-        <div className="mt-4 p-4 bg-indigo-50 rounded-xl">
-          <p className="text-sm font-medium text-indigo-900 mb-1">Why this matches you:</p>
-          <p className="text-sm text-indigo-700">{matchReason}</p>
+        <div className="mt-4 p-4 bg-cyan-100 text-cyan-700 rounded-xl">
+          <p className="text-sm font-medium  mb-1">Why this matches you:</p>
+          <p className="text-sm ">{matchReason}</p>
         </div>
       )}
 
