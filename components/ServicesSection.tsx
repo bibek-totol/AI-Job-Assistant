@@ -1,117 +1,99 @@
-'use client';
-import { useState } from "react";
-import { FileText, Wallet, Video, Search, Mail, Award, ArrowRight } from "lucide-react";
+"use client"
+
+import { FileText, Mail, Video, Search, Users, ClipboardList, ArrowRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 const services = [
   {
     icon: FileText,
     title: "Resume Checker",
-    description: "Check your resume ATS compatibility and get personalized feedback to improve your chances of landing a job.",
-    link: "Check Resume ATS",
+    description:
+      "Check your resume ATS compatibility and get personalized feedback to improve your chances of landing a job.",
+    color: "from-violet-500 to-purple-500",
+    href: "#",
   },
   {
     icon: Mail,
-    title: "Cover Letter Writer",
-    description: "Generate compelling, personalized cover letters in seconds. Match your experience with job requirements effortlessly.",
-    link: "Write Cover Letter",
+    title: "Cover Letter",
+    description:
+      "Generate compelling cover letters tailored to specific job descriptions using advanced AI technology.",
+    color: "from-cyan-500 to-teal-500",
+    href: "#",
   },
   {
     icon: Video,
-    title: "Interview Coach",
-    description: "Practice with AI-powered mock interviews. Get instant feedback, suggested answers, and confidence-building tips.",
-    link: "Start Practice",
+    title: "Interview Prep",
+    description: "Practice with AI-powered mock interviews and receive real-time feedback to ace your interviews.",
+    color: "from-amber-500 to-orange-500",
+    href: "#",
   },
   {
     icon: Search,
-    title: "Job Matching",
-    description: "Discover perfect job opportunities matched to your skills, experience, and preferences. Never miss a relevant opening.",
-    link: "Find Jobs",
+    title: "Job Search",
+    description: "Discover thousands of curated job opportunities matched to your skills and preferences.",
+    color: "from-emerald-500 to-green-500",
+    href: "#",
   },
   {
-    icon: Award,
-    title: "Courses Recommendation",
-    description: "Get personalized career development recommendations based on your skills and goals. Our AI-powered courses are tailored to your needs.",
-    link: "Get Courses",
+    icon: Users,
+    title: "Career Coaching",
+    description: "Get personalized career guidance based on insights from successful professionals in your field.",
+    color: "from-rose-500 to-pink-500",
+    href: "#",
   },
   {
-    icon: Wallet,
-    title: "Salary Estimator",
-    description: "Get personalized salary estimates based on your experience, location, and job title. Our AI-powered salary estimator helps you make informed decisions about your future.",
-    link: "Estimate Salary",
+    icon: ClipboardList,
+    title: "Skill Assessment",
+    description: "Evaluate your skills with comprehensive assessments and identify areas for improvement.",
+    color: "from-blue-500 to-indigo-500",
+    href: "#",
   },
-];
+]
 
-const ServicesSection = () => {
-  const [activeService, setActiveService] = useState(0);
-  const ActiveIcon = services[activeService].icon;
-
+export function ServicesSection() {
   return (
-    <section className="py-20 " id="services">
-      <div className="container mx-auto px-4 lg:px-8">
+    <section id="services" className="py-24 relative">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/2 left-0 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl lg:text-5xl text-gray-300 font-bold mb-4">Explore Our Services</h2>
-          <p className="text-lg text-gray-100 max-w-2xl mx-auto">
-            AI-powered tools designed to accelerate your job search, enhance your applications, 
-            and boost your career growth.
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Explore Our Services</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            AI-powered tools designed to accelerate your job search, enhance your applications, and boost your career
+            growth.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8 items-start">
-          {/* Service Showcase */}
-          <div className="bg-feature-blue-light rounded-3xl p-8 lg:p-12 min-h-[500px] flex flex-col">
-            <div className="bg-primary rounded-2xl p-8 text-center mb-8">
-              <ActiveIcon className="w-12 h-12 mx-auto text-primary-foreground mb-4" />
-              <h3 className="text-xl font-bold text-primary-foreground">
-                {services[activeService].title}
-              </h3>
-            </div>
-            
-            <div className="flex-1 animate-bounce flex items-center justify-center">
-              <div className="w-48  h-48 bg-violet-600/30 rounded-full flex items-center justify-center">
-                <div className=" w-32 h-32  bg-primary/20 rounded-full flex items-center justify-center">
-                  <ActiveIcon className="w-16 h-16 text-white" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Service Description */}
-          <div className="bg-cream rounded-3xl p-8 lg:p-12 min-h-[500px] flex flex-col justify-center">
-            <h3 className="text-3xl font-bold mb-6 text-gray-300">{services[activeService].title}</h3>
-            <p className="text-lg text-gray-100 mb-8">
-              {services[activeService].description}
-            </p>
-            <a 
-              href="#" 
-              className="inline-flex items-center gap-2 text-purple-300 font-semibold hover:gap-3 transition-all"
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {services.map((service, index) => (
+            <div
+              key={service.title}
+              className="group glass rounded-2xl p-6 hover-lift cursor-pointer"
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
-              {services[activeService].link} <ArrowRight className="w-5 h-5" />
-            </a>
+              <div
+                className={`w-12 h-12 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}
+              >
+                <service.icon className="w-6 h-6 text-white" />
+              </div>
 
-            {/* Service Navigation */}
-            <div className="mt-12 grid grid-cols-3 gap-3">
-              {services.map((service, index) => {
-                const Icon = service.icon;
-                return (
-                  <button
-                    key={index}
-                    onClick={() => setActiveService(index)}
-                    className={`p-4 rounded-xl transition-all ${
-                      index === activeService
-                        ? "bg-primary text-primary-foreground shadow-lg"
-                        : "bg-card hover:bg-muted border border-border"
-                    }`}
-                  >
-                    <Icon className="w-6 h-6 mx-auto" />
-                  </button>
-                );
-              })}
+              <h3 className="text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                {service.title}
+              </h3>
+
+              <p className="text-muted-foreground text-sm mb-4 leading-relaxed">{service.description}</p>
+
+              <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80 p-0 h-auto group/btn">
+                Learn more
+                <ArrowRight className="w-4 h-4 ml-1 group-hover/btn:translate-x-1 transition-transform" />
+              </Button>
             </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>
-  );
-};
-
-export default ServicesSection;
+  )
+}

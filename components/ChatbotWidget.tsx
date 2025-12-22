@@ -6,7 +6,7 @@ import "react-chatbot-kit/build/main.css";
 import { MessageCircle, X } from "lucide-react";
 import { createChatBotMessage } from "react-chatbot-kit";
 
-/* ---------------- BOT CONFIG ---------------- */
+
 
 export const botConfig = {
   botName: "AI Job Assistant",
@@ -31,7 +31,7 @@ export const botConfig = {
   },
 };
 
-/* ---------------- MESSAGE PARSER ---------------- */
+
 
 export class MessageParser {
   actionProvider: any;
@@ -45,7 +45,7 @@ export class MessageParser {
   }
 }
 
-/* ---------------- ACTION PROVIDER ---------------- */
+
 
 export class ActionProvider {
   createChatBotMessage: any;
@@ -89,7 +89,7 @@ export class ActionProvider {
   }
 }
 
-/* ---------------- CHATBOT WIDGET ---------------- */
+
 
 export default function ChatbotWidget() {
   const [open, setOpen] = useState(false);

@@ -1,88 +1,112 @@
-import Link from 'next/link';
-import logo from '../public/Screenshot_40.jpg';
+"use client"
 
-export default function Footer() {
-  const footerLinks = {
-    Product: [
-      { name: 'Resume Checker', href: '/resume-checker' },
-      { name: 'Job Search', href: '/job-suggestions' },
-      { name: 'Interview Scheduler', href: '/interview-scheduler' },
-      { name: 'Courses', href: '/courses' },
-      { name: 'Salary Estimator', href: '/salary-estimator' },
-    ],
-    Company: [
-      { name: 'About', href: '#' },
-      { name: 'Blog', href: '#' },
-      { name: 'Careers', href: '#' },
-      { name: 'Contact', href: '#' },
-    ],
-    Resources: [
-      { name: 'Documentation', href: '#' },
-      { name: 'Help Center', href: '#' },
-      { name: 'Privacy Policy', href: '#' },
-      { name: 'Terms of Service', href: '#' },
-    ],
-  };
+import Link from "next/link"
+import { Sparkles, Twitter, Linkedin, Github } from "lucide-react"
 
+const footerLinks = {
+  product: [
+    { name: "Resume Checker", href: "#" },
+    { name: "Job Search", href: "#" },
+    { name: "Interview Scheduler", href: "#" },
+    { name: "Courses", href: "#" },
+    { name: "Salary Estimator", href: "#" },
+  ],
+  company: [
+    { name: "About", href: "#" },
+    { name: "Blog", href: "#" },
+    { name: "Careers", href: "#" },
+    { name: "Contact", href: "#" },
+  ],
+  resources: [
+    { name: "Documentation", href: "#" },
+    { name: "Help Center", href: "#" },
+    { name: "Privacy Policy", href: "#" },
+    { name: "Terms of Service", href: "#" },
+  ],
+}
+
+export function Footer() {
   return (
-    <footer className="glass bg-transparent border-t border-gray-200 text-[14px]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand Section */}
-          <div className="col-span-1">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600" 
-              
-              >
-  <img src={logo.src} className='w-full h-full object-contain' alt="AI Job Assistant Logo" />
+    <footer className="border-t border-border/50 bg-card/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-16">
+          <div className="col-span-2 md:col-span-1">
+            <Link href="/" className="flex items-center gap-2 mb-4">
+              <div className="w-9 h-9 rounded-lg bg-primary/20 flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-primary" />
               </div>
-              <span className=" font-bold gradient-text">AI Job Assistant</span>
-            </div>
-            <p className="text-gray-400 leading-relaxed">
+              <span className="font-semibold text-lg text-foreground">AI Job Assistant</span>
+            </Link>
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Your personal AI-powered career companion. Find jobs, ace interviews, and advance your career.
             </p>
           </div>
 
-          {/* Links Sections */}
-          {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category}>
-              <h3 className="font-semibold text-gray-400 mb-4">{category}</h3>
-              <ul className="space-y-3">
-                {links.map((link) => (
-                  <li key={link.name}>
-                    <Link
-                      href={link.href}
-                      className="text-gray-200  hover:text-indigo-600 transition-colors "
-                    >
-                      {link.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div>
+            <h4 className="font-semibold text-foreground mb-4">Product</h4>
+            <ul className="space-y-3">
+              {footerLinks.product.map((link) => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold text-foreground mb-4">Company</h4>
+            <ul className="space-y-3">
+              {footerLinks.company.map((link) => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold text-foreground mb-4">Resources</h4>
+            <ul className="space-y-3">
+              {footerLinks.resources.map((link) => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-gray-200">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-cyan-400 ">
-              © {new Date().getFullYear()} AI Job Assistant. All rights reserved.
-            </p>
-            <div className="flex space-x-6">
-              {['Twitter', 'LinkedIn', 'GitHub'].map((social) => (
-                <a
-                  key={social}
-                  href="#"
-                  className="text-cyan-400 hover:text-indigo-600 transition-colors "
-                >
-                  {social}
-                </a>
-              ))}
-            </div>
+        <div className="flex flex-col sm:flex-row items-center justify-between mt-12 pt-8 border-t border-border/50 gap-4">
+          <p className="text-sm text-muted-foreground">© 2025 AI Job Assistant. All rights reserved.</p>
+
+          <div className="flex items-center gap-4">
+            <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Twitter className="w-5 h-5" />
+            </Link>
+            <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Linkedin className="w-5 h-5" />
+            </Link>
+            <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Github className="w-5 h-5" />
+            </Link>
           </div>
         </div>
       </div>
     </footer>
-  );
+  )
 }

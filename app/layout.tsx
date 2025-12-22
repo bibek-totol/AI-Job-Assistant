@@ -1,80 +1,32 @@
-import type { Metadata } from 'next';
-import './globals.css';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import localFont from 'next/font/local';
-import bgImage from '../public/backpic2.jpg';
-import { Toaster } from 'react-hot-toast';
-import ChatbotWidget from '@/components/ChatbotWidget';
+import type React from "react"
+import type { Metadata } from "next"
+import { Inter, Geist_Mono } from "next/font/google"
+import { Analytics } from "@vercel/analytics/next"
+import "./globals.css"
+import { Navbar } from "@/components/Navbar"
+import { Footer } from "@/components/Footer"
 
-
-const sekuya = localFont({
-  src: '../public/fonts/Sekuya-Regular.ttf',
-  variable: '--font-sekuya',
-});
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" })
 
 export const metadata: Metadata = {
-  title: {
-    default: 'AI Job Assistant - Your Personal Career Companion',
-    template: '%s | AI Job Assistant',
-  },
-  description: 'Find jobs, ace interviews, and advance your career with AI-powered tools. Resume checker, interview scheduler, job suggestions, and more.',
-  keywords: ['AI Job Assistant', 'Career Companion', 'Resume Checker', 'Interview Prep', 'Job Search', 'AI Career Tools'],
-  authors: [{ name: 'AI Job Assistant Team' }],
-  creator: 'AI Job Assistant',
-  publisher: 'AI Job Assistant',
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: 'https://ai-job-assistant.demo',
-    title: 'AI Job Assistant - Your Personal Career Companion',
-    description: 'Find jobs, ace interviews, and advance your career with AI-powered tools.',
-    siteName: 'AI Job Assistant',
-    images: [
-      {
-        url: '/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'AI Job Assistant',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'AI Job Assistant - Your Personal Career Companion',
-    description: 'Find jobs, ace interviews, and advance your career with AI-powered tools.',
-    creator: '@aijobassistant',
-    images: ['/twitter-image.jpg'],
-  },
-  metadataBase: new URL('https://ai-job-assistant.demo'),
-};
+  title: "AI Job Assistant - Your Career Growth Partner",
+  description: "AI-powered tools to accelerate your job search, enhance applications, and boost career growth.",
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
-
-  
   return (
     <html lang="en">
-       <body
-  className={`${sekuya.className} bg-contain bg-repeat      min-h-screen`}
-  style={{ backgroundImage: `url(${bgImage.src})` }}
->
-
-  
-
-        <Toaster position="top-center" reverseOrder={false} />
+      <body className={`${inter.variable} ${geistMono.variable} font-sans antialiased`}>
         <Navbar />
-        <main className="min-h-dvh pt-16 ">{children}</main>
+        {children}
         <Footer />
-
-        
-        <ChatbotWidget />
-    
+        <Analytics />
       </body>
-      
     </html>
-  );
+  )
 }

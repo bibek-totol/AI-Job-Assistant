@@ -1,6 +1,6 @@
 // Central export file for all components
-export { default as Navbar } from './Navbar';
-export { default as Footer } from './Footer';
+export { Navbar } from './Navbar';
+export { Footer } from './Footer';
 export { default as Button } from './Button';
 export { default as Card } from './Card';
 export { default as Input } from './Input';
