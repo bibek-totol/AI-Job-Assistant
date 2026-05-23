@@ -214,15 +214,10 @@ export function HeroSection() {
             }}
           >
             <span
-              className="w-1.5 h-1.5 rounded-full"
+              className="w-1.5 h-1.5 mx-auto rounded-full"
               style={{ background: "#00E5BE", boxShadow: "0 0 8px rgba(0,229,190,0.8)" }}
             />
-            <span
-              className="text-xs font-medium tracking-widest uppercase"
-              style={{ color: "rgba(255,255,255,0.45)", fontFamily: "'DM Sans', sans-serif" }}
-            >
-              AI-Powered Career Platform
-            </span>
+            
           </div>
         </div>
 

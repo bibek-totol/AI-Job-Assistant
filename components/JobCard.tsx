@@ -1,11 +1,18 @@
+"use client"
+
+import { useRef } from "react"
+import { MapPin, DollarSign, ArrowUpRight, Briefcase } from "lucide-react"
+import gsap from "gsap"
+
 interface JobCardProps {
-  title: string;
-  company: string;
-  location: string;
-  salary: string;
-  type: string;
-  matchReason?: string;
-  link?: string;
+  title: string
+  company: string
+  location: string
+  salary: string
+  type: string
+  matchReason?: string
+  link?: string
+  index?: number
 }
 
 export default function JobCard({
@@ -15,76 +22,181 @@ export default function JobCard({
   salary,
   type,
   matchReason,
-  link = '#',
+  link = "#",
+  index = 0,
 }: JobCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null)
+  const glowRef = useRef<HTMLDivElement>(null)
+
+  // Magnetic glow follows mouse inside card
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = cardRef.current
+    const glow = glowRef.current
+    if (!card || !glow) return
+    const rect = card.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    gsap.to(glow, { x: x - 120, y: y - 120, duration: 0.4, ease: "power2.out" })
+    gsap.to(glow, { opacity: 1, duration: 0.3 })
+  }
+
+  const handleMouseLeave = () => {
+    gsap.to(glowRef.current, { opacity: 0, duration: 0.4 })
+    gsap.to(cardRef.current, { y: 0, duration: 0.4, ease: "power2.out" })
+  }
+
+  const handleMouseEnter = () => {
+    gsap.to(cardRef.current, { y: -5, duration: 0.35, ease: "power2.out" })
+  }
+
+  const typeColor =
+    type?.toLowerCase().includes("remote")
+      ? { bg: "rgba(0,229,190,0.10)", color: "#00E5BE" }
+      : type?.toLowerCase().includes("full")
+      ? { bg: "rgba(108,99,255,0.12)", color: "#8B82FF" }
+      : { bg: "rgba(255,124,92,0.10)", color: "#FF7C5C" }
+
   return (
-    <div className="bg-transparent rounded-2xl shadow-lg p-6 border-2 border-cyan-400 card-hover">
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <h3 className="text-xl font-bold text-gray-300 mb-1">{title}</h3>
-          <p className="text-gray-300">{company}</p>
-        </div>
-        <span className="px-3 py-1 bg-cyan-100 text-cyan-700 rounded-md  text-sm font-medium">
-          {type}
-        </span>
-      </div>
+    <div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onMouseEnter={handleMouseEnter}
+      className="relative rounded-2xl overflow-hidden"
+      style={{
+        border: "1px solid rgba(255,255,255,0.07)",
+        background: "rgba(255,255,255,0.02)",
+        willChange: "transform",
+        cursor: "default",
+      }}
+    >
+      {/* Magnetic glow */}
+      <div
+        ref={glowRef}
+        className="absolute pointer-events-none rounded-full"
+        style={{
+          width: "240px",
+          height: "240px",
+          background: "radial-gradient(circle, rgba(108,99,255,0.15) 0%, transparent 70%)",
+          opacity: 0,
+          zIndex: 0,
+        }}
+      />
 
-      <div className="space-y-2 mb-4">
-        <div className="flex items-center text-gray-500">
-          <svg
-            className="w-5 h-5 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+      {/* Top accent line */}
+      <div
+        className="absolute top-0 left-6 right-6 h-px"
+        style={{ background: "linear-gradient(to right, transparent, rgba(108,99,255,0.5), transparent)" }}
+      />
+
+      <div className="relative z-10 p-6">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-3 mb-5">
+          {/* Company avatar */}
+          <div className="flex items-start gap-3 min-w-0">
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-sm font-bold"
+              style={{
+                background: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                color: "rgba(255,255,255,0.7)",
+                fontFamily: "'Syne', sans-serif",
+              }}
+            >
+              {company?.[0]?.toUpperCase() ?? "J"}
+            </div>
+            <div className="min-w-0">
+              <h3
+                className="text-sm font-bold text-white leading-tight mb-0.5 truncate"
+                style={{ fontFamily: "'Syne', sans-serif" }}
+              >
+                {title}
+              </h3>
+              <p
+                className="text-xs truncate"
+                style={{ color: "rgba(255,255,255,0.38)", fontFamily: "'DM Sans', sans-serif" }}
+              >
+                {company}
+              </p>
+            </div>
+          </div>
+
+          {/* Type badge */}
+          <span
+            className="shrink-0 text-[10px] font-mono uppercase tracking-wider px-2.5 py-1 rounded-full"
+            style={{ background: typeColor.bg, color: typeColor.color }}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-          </svg>
-          {location}
+            {type}
+          </span>
         </div>
-        <div className="flex items-center text-gray-600">
-          <svg
-            className="w-5 h-5 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+
+        {/* Meta row */}
+        <div className="flex flex-col gap-2 mb-5">
+          <div className="flex items-center gap-2">
+            <MapPin className="w-3.5 h-3.5 shrink-0" style={{ color: "rgba(255,255,255,0.25)" }} />
+            <span className="text-xs truncate" style={{ color: "rgba(255,255,255,0.40)", fontFamily: "'DM Sans', sans-serif" }}>
+              {location}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <DollarSign className="w-3.5 h-3.5 shrink-0" style={{ color: "rgba(255,255,255,0.25)" }} />
+            <span className="text-xs" style={{ color: "rgba(255,255,255,0.40)", fontFamily: "'DM Sans', sans-serif" }}>
+              {salary}
+            </span>
+          </div>
+        </div>
+
+        {/* Match reason */}
+        {matchReason && (
+          <div
+            className="rounded-xl p-3.5 mb-5"
+            style={{ background: "rgba(108,99,255,0.08)", border: "1px solid rgba(108,99,255,0.15)" }}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          {salary}
-        </div>
+            <p
+              className="text-[10px] font-mono uppercase tracking-wider mb-1.5"
+              style={{ color: "rgba(108,99,255,0.7)" }}
+            >
+              Why this matches you
+            </p>
+            <p className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.45)", fontFamily: "'DM Sans', sans-serif" }}>
+              {matchReason}
+            </p>
+          </div>
+        )}
+
+        {/* CTA */}
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex items-center justify-between w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200"
+          style={{
+            background: "rgba(108,99,255,0.10)",
+            border: "1px solid rgba(108,99,255,0.2)",
+            color: "#8B82FF",
+            fontFamily: "'DM Sans', sans-serif",
+          }}
+          onMouseEnter={(e) => {
+            gsap.to(e.currentTarget, {
+              background: "rgba(108,99,255,0.2)",
+              borderColor: "rgba(108,99,255,0.45)",
+              color: "#fff",
+              duration: 0.25,
+            })
+          }}
+          onMouseLeave={(e) => {
+            gsap.to(e.currentTarget, {
+              background: "rgba(108,99,255,0.10)",
+              borderColor: "rgba(108,99,255,0.2)",
+              color: "#8B82FF",
+              duration: 0.25,
+            })
+          }}
+        >
+          <span>View Details</span>
+          <ArrowUpRight className="w-4 h-4 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform duration-200" />
+        </a>
       </div>
-
-      {matchReason && (
-        <div className="mt-4 p-4 bg-cyan-100 text-cyan-700 rounded-xl">
-          <p className="text-sm font-medium  mb-1">Why this matches you:</p>
-          <p className="text-sm ">{matchReason}</p>
-        </div>
-      )}
-
-      <a 
-        href={link}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-4 block w-full text-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
-      >
-        View Details
-      </a>
     </div>
-  );
+  )
 }
