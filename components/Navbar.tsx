@@ -1,95 +1,172 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Menu, X, Sparkles } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Menu, X } from "lucide-react"
 import { usePathname } from "next/navigation"
 
 const navLinks = [
-  
-
-   { href: '/resume-checker', label: 'Resume Checker' },
-    { href: '/interview-scheduler', label: 'Interview' },
-    { href: '/job-suggestions', label: 'Job Search' },
-    { href: '/courses', label: 'Courses' },
-    { href: '/cover-letter', label: 'Cover Letter' },
+  { href: "/resume-checker", label: "Resume Checker" },
+  { href: "/interview-scheduler", label: "Interview" },
+  { href: "/job-suggestions", label: "Job Search" },
+  { href: "/courses", label: "Courses" },
+  { href: "/cover-letter", label: "Cover Letter" },
 ]
 
 export function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
 
+  useEffect(() => {
+    const handler = () => setScrolled(window.scrollY > 20)
+    window.addEventListener("scroll", handler)
+    return () => window.removeEventListener("scroll", handler)
+  }, [])
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsOpen(false)
+  }, [pathname])
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav
+      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      style={{
+        background: scrolled
+          ? "rgba(8, 8, 8, 0.85)"
+          : "transparent",
+        backdropFilter: scrolled ? "blur(16px)" : "none",
+        borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
+      }}
+    >
+      <div className="max-w-6xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 rounded-lg bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 transition-colors">
-              <Sparkles className="w-5 h-5 text-primary" />
+
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2.5 group shrink-0">
+            <div
+              className="w-7 h-7 rounded-lg flex items-center justify-center"
+              style={{ background: "linear-gradient(135deg, #6C63FF, #5a52d5)" }}
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M7 1L13 4V10L7 13L1 10V4L7 1Z" stroke="white" strokeWidth="1.5" strokeLinejoin="round" />
+                <path d="M7 4L10 5.5V8.5L7 10L4 8.5V5.5L7 4Z" fill="white" />
+              </svg>
             </div>
-            <span className="font-semibold text-lg text-foreground">AI Job Assistant</span>
+            <span
+              className="font-bold text-base text-white tracking-tight"
+              style={{ fontFamily: "'Syne', sans-serif" }}
+            >
+              JobAI
+            </span>
           </Link>
 
+          {/* Desktop nav links */}
           <div className="hidden md:flex items-center gap-1">
-           {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className={`px-4 py-2 text-sm transition-colors rounded-lg ${
-                  pathname === link.href
-                    ? "text-primary bg-primary/10"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const active = pathname === link.href
+              return (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className="relative px-3.5 py-2 text-sm transition-colors duration-200 rounded-lg"
+                  style={{
+                    fontFamily: "'DM Sans', sans-serif",
+                    color: active ? "#fff" : "rgba(255,255,255,0.45)",
+                    background: active ? "rgba(108,99,255,0.12)" : "transparent",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!active) (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.8)"
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!active) (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.45)"
+                  }}
+                >
+                  {active && (
+                    <span
+                      className="absolute inset-x-3 bottom-1 h-px rounded-full"
+                      style={{ background: "#6C63FF" }}
+                    />
+                  )}
+                  {link.label}
+                </Link>
+              )
+            })}
           </div>
 
+          {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
-            
-            <Link href="/contact" >
-               <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 cursor-pointer hover:scale-110 hover:bg-primary/90 text-primary-foreground">
+            <Link
+              href="/contact"
+              className="inline-flex items-center px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 hover:opacity-90 hover:-translate-y-px"
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                background: "linear-gradient(135deg, #6C63FF, #5a52d5)",
+                color: "#fff",
+                boxShadow: "0 0 20px rgba(108, 99, 255, 0.3)",
+              }}
+            >
               Contact Us
-            </Button>
             </Link>
-           
           </div>
 
+          {/* Mobile burger */}
           <button
-            className="md:hidden p-2 text-muted-foreground hover:text-foreground"
+            className="md:hidden p-2 rounded-lg transition-colors"
+            style={{ color: "rgba(255,255,255,0.5)" }}
             onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle menu"
           >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
+      </div>
 
-        {isOpen && (
-          <div className="md:hidden py-4 border-t border-border">
-            <div className="flex flex-col gap-2">
-              {navLinks.map((link) => (
+      {/* Mobile menu */}
+      <div
+        className="md:hidden overflow-hidden transition-all duration-300"
+        style={{
+          maxHeight: isOpen ? "400px" : "0",
+          opacity: isOpen ? 1 : 0,
+          background: "rgba(8,8,8,0.97)",
+          backdropFilter: "blur(16px)",
+          borderTop: isOpen ? "1px solid rgba(255,255,255,0.06)" : "none",
+        }}
+      >
+        <div className="max-w-6xl mx-auto px-6 py-5 flex flex-col gap-1">
+          {navLinks.map((link) => {
+            const active = pathname === link.href
+            return (
               <Link
                 key={link.label}
                 href={link.href}
-                className={`px-4 py-2 text-sm transition-colors rounded-lg ${
-                  pathname === link.href
-                    ? "text-primary bg-primary/10"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                }`}
+                className="px-4 py-3 text-sm rounded-xl transition-colors"
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  color: active ? "#fff" : "rgba(255,255,255,0.45)",
+                  background: active ? "rgba(108,99,255,0.10)" : "transparent",
+                }}
               >
                 {link.label}
               </Link>
-            ))}
-              <div className="flex gap-2 mt-4 px-4">
-              
-                <Button size="sm" className="flex-1 bg-primary hover:bg-primary/90">
-                  Contact Us
-                </Button>
-              </div>
-            </div>
+            )
+          })}
+
+          <div className="mt-3 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+            <Link
+              href="/contact"
+              className="flex items-center justify-center w-full py-3 rounded-full text-sm font-semibold"
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                background: "linear-gradient(135deg, #6C63FF, #5a52d5)",
+                color: "#fff",
+              }}
+            >
+              Contact Us
+            </Link>
           </div>
-        )}
+        </div>
       </div>
     </nav>
   )

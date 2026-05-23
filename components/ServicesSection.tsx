@@ -1,95 +1,131 @@
 "use client"
 
-import { FileText, Mail, Video, Search, Users, ClipboardList, ArrowRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { FileText, Mail, Video, Search, Users, ClipboardList, ArrowUpRight } from "lucide-react"
 
 const services = [
   {
     icon: FileText,
     title: "Resume Checker",
-    description:
-      "Check your resume ATS compatibility and get personalized feedback to improve your chances of landing a job.",
-    color: "from-violet-500 to-purple-500",
-    href: "#",
+    description: "ATS compatibility analysis with personalized feedback to maximize your interview callback rate.",
+    accent: "#6C63FF",
+    tag: "Most Popular",
   },
   {
     icon: Mail,
     title: "Cover Letter",
-    description:
-      "Generate compelling cover letters tailored to specific job descriptions using advanced AI technology.",
-    color: "from-cyan-500 to-teal-500",
-    href: "#",
+    description: "Compelling, tailored cover letters generated from job descriptions in under 60 seconds.",
+    accent: "#00E5BE",
+    tag: null,
   },
   {
     icon: Video,
     title: "Interview Prep",
-    description: "Practice with AI-powered mock interviews and receive real-time feedback to ace your interviews.",
-    color: "from-amber-500 to-orange-500",
-    href: "#",
+    description: "AI mock interviews with real-time feedback. Walk in confident, walk out with an offer.",
+    accent: "#FF7C5C",
+    tag: null,
   },
   {
     icon: Search,
     title: "Job Search",
-    description: "Discover thousands of curated job opportunities matched to your skills and preferences.",
-    color: "from-emerald-500 to-green-500",
-    href: "#",
+    description: "Thousands of curated opportunities matched precisely to your skills and preferences.",
+    accent: "#6C63FF",
+    tag: null,
   },
   {
     icon: Users,
     title: "Career Coaching",
-    description: "Get personalized career guidance based on insights from successful professionals in your field.",
-    color: "from-rose-500 to-pink-500",
-    href: "#",
+    description: "Personalized guidance from AI trained on the career paths of top professionals.",
+    accent: "#00E5BE",
+    tag: null,
   },
   {
     icon: ClipboardList,
     title: "Skill Assessment",
-    description: "Evaluate your skills with comprehensive assessments and identify areas for improvement.",
-    color: "from-blue-500 to-indigo-500",
-    href: "#",
+    description: "Comprehensive skill evaluations that surface your gaps and growth opportunities clearly.",
+    accent: "#FF7C5C",
+    tag: null,
   },
 ]
 
 export function ServicesSection() {
   return (
-    <section id="services" className="py-24 relative">
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/2 left-0 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
-      </div>
+    <section id="services" className="py-32 bg-[#080808] relative overflow-hidden">
+      {/* Background glow */}
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] opacity-5 blur-3xl rounded-full"
+        style={{ background: "#6C63FF" }}
+      />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Explore Our Services</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            AI-powered tools designed to accelerate your job search, enhance your applications, and boost your career
-            growth.
+      <div className="relative max-w-6xl mx-auto px-6 lg:px-8">
+        {/* Section label */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="h-px w-8 bg-[#6C63FF]" />
+          <span className="text-xs font-mono uppercase tracking-[0.2em] text-white/30">Services</span>
+        </div>
+
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-16">
+          <h2
+            className="text-4xl sm:text-5xl font-bold text-white leading-tight"
+            style={{ fontFamily: "'Syne', sans-serif", letterSpacing: "-0.02em", maxWidth: "540px" }}
+          >
+            Every tool you need to get hired.
+          </h2>
+          <p className="text-white/30 max-w-xs text-sm leading-relaxed" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            AI-powered from start to finish. No fluff, just results.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {services.map((service, index) => (
             <div
               key={service.title}
-              className="group glass rounded-2xl p-6 hover-lift cursor-pointer"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              className="group relative rounded-2xl p-7 border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/10 transition-all duration-300 cursor-pointer overflow-hidden"
             >
+              {/* Top accent line on hover */}
               <div
-                className={`w-12 h-12 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}
-              >
-                <service.icon className="w-6 h-6 text-white" />
+                className="absolute top-0 left-7 right-7 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{ background: `linear-gradient(to right, transparent, ${service.accent}, transparent)` }}
+              />
+
+              <div className="flex items-start justify-between mb-5">
+                <div
+                  className="w-11 h-11 rounded-xl flex items-center justify-center"
+                  style={{ background: `${service.accent}15` }}
+                >
+                  <service.icon className="w-5 h-5" style={{ color: service.accent }} />
+                </div>
+
+                {service.tag && (
+                  <span
+                    className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-1 rounded-full"
+                    style={{
+                      background: `${service.accent}15`,
+                      color: service.accent,
+                    }}
+                  >
+                    {service.tag}
+                  </span>
+                )}
+
+                <ArrowUpRight
+                  className="w-4 h-4 text-white/20 group-hover:text-white/50 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all duration-200"
+                  style={{ ...(service.tag ? { display: "none" } : {}) }}
+                />
               </div>
 
-              <h3 className="text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+              <h3
+                className="text-base font-semibold text-white mb-2.5 group-hover:text-white transition-colors"
+                style={{ fontFamily: "'Syne', sans-serif" }}
+              >
                 {service.title}
               </h3>
 
-              <p className="text-muted-foreground text-sm mb-4 leading-relaxed">{service.description}</p>
-
-              <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80 p-0 h-auto group/btn">
-                Learn more
-                <ArrowRight className="w-4 h-4 ml-1 group-hover/btn:translate-x-1 transition-transform" />
-              </Button>
+              <p
+                className="text-sm text-white/35 leading-relaxed"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                {service.description}
+              </p>
             </div>
           ))}
         </div>

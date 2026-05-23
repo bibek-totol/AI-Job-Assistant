@@ -1,6 +1,7 @@
 "use client"
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { useState } from "react"
+import { Plus, Minus } from "lucide-react"
 
 const audiences = [
   {
@@ -35,61 +36,168 @@ const audiences = [
   },
 ]
 
-export function FAQSection() {
+function AccordionItem({
+  item,
+  isOpen,
+  onToggle,
+}: {
+  item: (typeof audiences)[0]
+  isOpen: boolean
+  onToggle: () => void
+}) {
   return (
-    <section className="py-24 relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+    <div
+      className="border-b border-white/[0.06] last:border-b-0"
+    >
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between py-5 text-left group"
+      >
+        <span
+          className={`text-sm font-medium transition-colors duration-200 ${isOpen ? "text-white" : "text-white/50 group-hover:text-white/75"}`}
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+          {item.title}
+        </span>
+        <div
+          className={`w-7 h-7 rounded-full border flex items-center justify-center shrink-0 transition-all duration-200 ${
+            isOpen ? "border-[#6C63FF] bg-[#6C63FF]/10" : "border-white/10 group-hover:border-white/20"
+          }`}
+        >
+          {isOpen ? (
+            <Minus className="w-3 h-3 text-[#6C63FF]" />
+          ) : (
+            <Plus className="w-3 h-3 text-white/40" />
+          )}
+        </div>
+      </button>
+      <div
+        className="overflow-hidden transition-all duration-300"
+        style={{ maxHeight: isOpen ? "200px" : "0", opacity: isOpen ? 1 : 0 }}
+      >
+        <p
+          className="text-sm text-white/30 leading-relaxed pb-5"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+          {item.content}
+        </p>
+      </div>
+    </div>
+  )
+}
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+export function FAQSection() {
+  const [openIndex, setOpenIndex] = useState<number | null>(0)
+
+  return (
+    <section className="py-32 bg-[#080808] relative overflow-hidden">
+      {/* Glow */}
+      <div
+        className="absolute bottom-0 right-0 w-[500px] h-[400px] opacity-5 blur-3xl rounded-full"
+        style={{ background: "#00E5BE" }}
+      />
+
+      <div className="relative max-w-6xl mx-auto px-6 lg:px-8">
+        {/* Section label */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="h-px w-8 bg-[#6C63FF]" />
+          <span className="text-xs font-mono uppercase tracking-[0.2em] text-white/30">Who We Serve</span>
+        </div>
+
         <div className="grid lg:grid-cols-2 gap-16 items-start">
+          {/* Left */}
           <div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Your Questions, Answered</h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Explore how JobAI can support you at every stage of your career journey.
+            <h2
+              className="text-4xl sm:text-5xl font-bold text-white leading-tight mb-5"
+              style={{ fontFamily: "'Syne', sans-serif", letterSpacing: "-0.02em" }}
+            >
+              Built for every stage of your career.
+            </h2>
+            <p
+              className="text-sm text-white/30 leading-relaxed mb-12 max-w-sm"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            >
+              Whether you're just starting out or making a bold pivot, JobAI meets you exactly where you are.
             </p>
 
-            <div className="glass rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-primary mb-4">Who We Serve</h3>
-              <Accordion type="single" collapsible className="w-full">
-                {audiences.map((item, index) => (
-                  <AccordionItem key={index} value={`item-${index}`} className="border-border/50">
-                    <AccordionTrigger className="text-foreground hover:text-primary hover:no-underline py-4">
-                      {item.title}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground text-sm leading-relaxed pb-4">
-                      {item.content}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
+            {/* Accordion */}
+            <div className="border-t border-white/[0.06]">
+              {audiences.map((item, index) => (
+                <AccordionItem
+                  key={index}
+                  item={item}
+                  isOpen={openIndex === index}
+                  onToggle={() => setOpenIndex(openIndex === index ? null : index)}
+                />
+              ))}
             </div>
           </div>
 
-          <div className="glass rounded-2xl p-8">
-            <h3 className="text-lg font-semibold text-accent mb-4">Our Purpose</h3>
-            <p className="text-muted-foreground leading-relaxed mb-6">
-              Our purpose is to make career advancement accessible, efficient, and achievable for everyone. We remove
-              the barriers that prevent job seekers from landing their dream roles by providing AI-powered tools that
-              level the playing field.
-            </p>
+          {/* Right — Stats panel */}
+          <div className="lg:pt-20">
+            {/* Purpose block */}
+            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 mb-6">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-1 h-4 rounded-full bg-[#00E5BE]" />
+                <span className="text-xs font-mono uppercase tracking-wider text-white/30">Our Purpose</span>
+              </div>
+              <p
+                className="text-sm text-white/40 leading-relaxed"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                We remove the barriers that keep talented people from their dream roles. AI-powered tools that level
+                the playing field — for everyone, not just the privileged few.
+              </p>
+            </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-primary/10">
-                <div className="text-2xl font-bold text-primary mb-1">50K+</div>
-                <div className="text-sm text-muted-foreground">Resumes Optimized</div>
+            {/* Stats grid */}
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { value: "50K+", label: "Resumes Optimized", accent: "#6C63FF" },
+                { value: "98%", label: "Success Rate", accent: "#00E5BE" },
+                { value: "24/7", label: "AI Support", accent: "#00E5BE" },
+                { value: "5 min", label: "Avg. Analysis Time", accent: "#6C63FF" },
+              ].map((stat) => (
+                <div
+                  key={stat.label}
+                  className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5"
+                >
+                  <div
+                    className="text-2xl font-bold mb-1"
+                    style={{ fontFamily: "'Syne', sans-serif", color: stat.accent }}
+                  >
+                    {stat.value}
+                  </div>
+                  <div
+                    className="text-xs text-white/25 uppercase tracking-wider font-mono"
+                  >
+                    {stat.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <div className="mt-6 rounded-2xl border border-[#6C63FF]/20 bg-[#6C63FF]/5 p-6 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-white mb-1" style={{ fontFamily: "'Syne', sans-serif" }}>
+                  Ready to get started?
+                </p>
+                <p className="text-xs text-white/30" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                  Free forever. No credit card needed.
+                </p>
               </div>
-              <div className="p-4 rounded-xl bg-accent/10">
-                <div className="text-2xl font-bold text-accent mb-1">98%</div>
-                <div className="text-sm text-muted-foreground">Success Rate</div>
-              </div>
-              <div className="p-4 rounded-xl bg-accent/10">
-                <div className="text-2xl font-bold text-accent mb-1">24/7</div>
-                <div className="text-sm text-muted-foreground">AI Support</div>
-              </div>
-              <div className="p-4 rounded-xl bg-primary/10">
-                <div className="text-2xl font-bold text-primary mb-1">5 min</div>
-                <div className="text-sm text-muted-foreground">Avg. Analysis Time</div>
-              </div>
+              <button
+                className="shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 hover:opacity-90"
+                style={{
+                  background: "linear-gradient(135deg, #6C63FF, #5a52d5)",
+                  color: "#fff",
+                  fontFamily: "'DM Sans', sans-serif",
+                  boxShadow: "0 0 20px rgba(108, 99, 255, 0.3)",
+                }}
+              >
+                Sign up free
+              </button>
             </div>
           </div>
         </div>

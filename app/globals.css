@@ -1,9 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap');
+
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @theme {
-  --font-sans: "Inter", "Geist", "Geist Fallback", system-ui, sans-serif;
+  --font-sans: "DM Sans", "Inter", system-ui, sans-serif;
   --font-mono: "Geist Mono", "Geist Mono Fallback", monospace;
+  --font-display: "Syne", sans-serif;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -55,7 +59,7 @@
   }
   @keyframes marquee {
     0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+    100% { transform: translateX(-33.333%); }
   }
 
   --animate-float: float 6s ease-in-out infinite;
@@ -67,39 +71,39 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(0.13 0.02 260);
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.16 0.02 260);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.16 0.02 260);
-  --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.65 0.24 280);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.22 0.02 260);
-  --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.22 0.02 260);
-  --muted-foreground: oklch(0.65 0 0);
-  --accent: oklch(0.75 0.18 180);
-  --accent-foreground: oklch(0.13 0.02 260);
+  --background: #080808;
+  --foreground: #ffffff;
+  --card: #0f0f0f;
+  --card-foreground: #ffffff;
+  --popover: #0f0f0f;
+  --popover-foreground: #ffffff;
+  --primary: #6C63FF;
+  --primary-foreground: #ffffff;
+  --secondary: #141414;
+  --secondary-foreground: #ffffff;
+  --muted: #141414;
+  --muted-foreground: rgba(255, 255, 255, 0.4);
+  --accent: #00E5BE;
+  --accent-foreground: #080808;
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.28 0.02 260);
-  --input: oklch(0.22 0.02 260);
-  --ring: oklch(0.65 0.24 280);
-  --chart-1: oklch(0.65 0.24 280);
-  --chart-2: oklch(0.75 0.18 180);
-  --chart-3: oklch(0.398 0.07 227.392);
+  --border: rgba(255, 255, 255, 0.06);
+  --input: #141414;
+  --ring: #6C63FF;
+  --chart-1: #6C63FF;
+  --chart-2: #00E5BE;
+  --chart-3: #FF7C5C;
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
   --radius: 0.75rem;
-  --sidebar: oklch(0.16 0.02 260);
-  --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.65 0.24 280);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.22 0.02 260);
-  --sidebar-accent-foreground: oklch(0.98 0 0);
-  --sidebar-border: oklch(0.28 0.02 260);
-  --sidebar-ring: oklch(0.65 0.24 280);
+  --sidebar: #0c0c0c;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #6C63FF;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #141414;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.06);
+  --sidebar-ring: #6C63FF;
 }
 
 @layer base {
@@ -108,17 +112,21 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: "DM Sans", "Inter", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
+/* ─── Utility classes ─── */
 .glass {
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #fff 0%, #a78bfa 50%, #22d3d8 100%);
+  background: linear-gradient(135deg, #8B82FF 0%, #6C63FF 50%, #00E5BE 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -130,5 +138,20 @@
 
 .hover-lift:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px -12px rgba(167, 139, 250, 0.25);
+  box-shadow: 0 20px 40px -12px rgba(108, 99, 255, 0.2);
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0f0f0f;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3a3a;
 }
