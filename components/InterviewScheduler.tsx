@@ -1,44 +1,44 @@
-'use client';
- 
- import { useState } from 'react';
- import SectionTitle from '@/components/SectionTitle';
- import Input from '@/components/Input';
- import Textarea from '@/components/Textarea';
- import Select from '@/components/Select';
- import Button from '@/components/Button';
- import GeneratedLinkBox from '@/components/GeneratedLinkBox';
- import toast from 'react-hot-toast';
- import { motion } from 'framer-motion';
+"use client";
+
+import { useState } from "react";
+import SectionTitle from "@/components/SectionTitle";
+import Input from "@/components/Input";
+import Textarea from "@/components/Textarea";
+import Select from "@/components/Select";
+import Button from "@/components/Button";
+import GeneratedLinkBox from "@/components/GeneratedLinkBox";
+import toast from "react-hot-toast";
+import { motion } from "framer-motion";
 
 export default function InterviewScheduler() {
-  const [jobTitle, setJobTitle] = useState('');
-  const [jobDescription, setJobDescription] = useState('');
-  const [interviewType, setInterviewType] = useState('technical');
-  const [interviewTime, setInterviewTime] = useState('');
+  const [jobTitle, setJobTitle] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
+  const [interviewType, setInterviewType] = useState("technical");
+  const [interviewTime, setInterviewTime] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   interface GeneratedData {
     link: string;
     questions: string[];
   }
 
-  const [generatedData, setGeneratedData] = useState<GeneratedData | null>(null);
+  const [generatedData, setGeneratedData] = useState<GeneratedData | null>(
+    null,
+  );
 
   const interviewTypes = [
-    { value: 'technical', label: 'Technical Interview' },
-    { value: 'behavioral', label: 'Behavioral Interview' },
-    { value: 'mock', label: 'Mock Interview' },
+    { value: "technical", label: "Technical Interview" },
+    { value: "behavioral", label: "Behavioral Interview" },
+    { value: "mock", label: "Mock Interview" },
   ];
 
-  
-
   const handleSchedule = async () => {
-    const toastId = toast.loading('Generating questions...');
+    const toastId = toast.loading("Generating questions...");
     setIsGenerating(true);
     try {
-      const response = await fetch('/api/generate-questions', {
-        method: 'POST',
+      const response = await fetch("/api/generate-questions", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           jobTitle,
@@ -48,35 +48,58 @@ export default function InterviewScheduler() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate questions');
+        throw new Error("Failed to generate questions");
       }
 
       const data = await response.json();
-      toast.success('Questions generated successfully!', { id: toastId });
-      
-      const randomId = Math.random().toString(36).substring(7);
-      
+      const randomId = Math.random().toString(36).substring(2, 10);
+
+      const saveResponse = await fetch(`/api/interview/${randomId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          questions: data.questions,
+          jobTitle,
+          jobDescription,
+          interviewType,
+        }),
+      });
+
+      if (!saveResponse.ok) {
+        throw new Error("Failed to save interview session");
+      }
+
+      sessionStorage.setItem(
+        `interview_questions_${randomId}`,
+        JSON.stringify(data.questions),
+      );
+
+      toast.success("Interview link ready!", { id: toastId });
+
       setGeneratedData({
         link: `${window.location.origin}/interview/${randomId}`,
         questions: data.questions,
       });
     } catch (error) {
-      console.error('Error:', error);
-      toast.error('Failed to generate questions', { id: toastId });
+      console.error("Error:", error);
+      toast.error("Failed to generate questions", { id: toastId });
     } finally {
       setIsGenerating(false);
     }
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ y: 40, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
       className=" min-h-screen  py-12 px-4 sm:px-6 lg:px-8"
     >
       <div className="max-w-4xl mx-auto">
-        <SectionTitle center subtitle="Create AI-powered interview sessions with auto-generated questions">
+        <SectionTitle
+          center
+          subtitle="Create AI-powered interview sessions with auto-generated questions"
+        >
           Interview Scheduler
         </SectionTitle>
 
@@ -116,14 +139,18 @@ export default function InterviewScheduler() {
                 onClick={handleSchedule}
                 className="w-full cursor-pointer"
                 size="lg"
-                disabled={!jobTitle || !jobDescription || !interviewTime || isGenerating}
+                disabled={
+                  !jobTitle || !jobDescription || !interviewTime || isGenerating
+                }
               >
-                {isGenerating ? 'Generating...' : 'Generate Interview'}
+                {isGenerating ? "Generating..." : "Generate Interview"}
               </Button>
             </div>
 
             <div className="mt-8 p-6 bg-indigo-50 rounded-xl">
-              <h3 className="font-semibold text-gray-900 mb-2">What happens next:</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">
+                What happens next:
+              </h3>
               <ul className="space-y-2 text-gray-700">
                 <li className="flex items-start">
                   <span className="text-indigo-600 mr-2">1.</span>
@@ -152,13 +179,12 @@ export default function InterviewScheduler() {
             />
             <div className="mt-6 text-center">
               <Button
-              
-                className='cursor-pointer   bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full hover:shadow-lg transition-all duration-300 hover:scale-110'
+                className="cursor-pointer   bg-linear-to-r from-indigo-600 to-purple-600 text-white rounded-full hover:shadow-lg transition-all duration-300 hover:scale-110"
                 onClick={() => {
                   setGeneratedData(null);
-                  setJobTitle('');
-                  setJobDescription('');
-                  setInterviewTime('');
+                  setJobTitle("");
+                  setJobDescription("");
+                  setInterviewTime("");
                 }}
               >
                 Schedule Another Interview

@@ -1,46 +1,36 @@
 import { NextResponse } from "next/server";
+import { completeWithFallback } from "@/lib/openrouter";
 
 export async function POST(req: Request) {
   try {
     const { message } = await req.json();
 
-    const response = await fetch(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": "http://localhost:3000",
-          "X-Title": "AI Job Assistant",
-        },
-        body: JSON.stringify({
-          model: "meta-llama/llama-3.3-70b-instruct:free",
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are an AI Job Assistant. Help users with jobs, resumes, interviews, career guidance, and professional advice.",
-            },
-            {
-              role: "user",
-              content: message,
-            },
-          ],
-        }),
-      }
-    );
+    if (!message?.trim()) {
+      return NextResponse.json(
+        { reply: "Please enter a message." },
+        { status: 400 },
+      );
+    }
 
-    const data = await response.json();
-    const reply =
-      data?.choices?.[0]?.message?.content ||
-      "Sorry, I couldn't understand that.";
+    const reply = await completeWithFallback(
+      "chat",
+      [
+        {
+          role: "system",
+          content:
+            "You are an AI Job Assistant. Help users with jobs, resumes, interviews, career guidance, and professional advice. Be concise, practical, and up to date with modern hiring practices.",
+        },
+        { role: "user", content: message },
+      ],
+      { temperature: 0.7, max_tokens: 800 },
+    );
 
     return NextResponse.json({ reply });
   } catch (error) {
+    console.error("Chat error:", error);
     return NextResponse.json(
       { reply: "AI service failed. Try again later." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
