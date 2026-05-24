@@ -1,15 +1,28 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import SectionTitle from "@/components/SectionTitle";
-import Input from "@/components/Input";
-import Button from "@/components/Button";
-import Card from "@/components/Card";
+import { useState, useEffect, useRef } from "react";
+import { Mic, Video, CheckCircle2, Loader2, Hash } from "lucide-react";
+import toast from "react-hot-toast";
+import gsap from "gsap";
 import InterviewSession from "@/components/InterviewSession";
 
 interface InterviewEntryProps {
   id: string;
 }
+
+const PRE_CHECKS = [
+  { icon: Mic, label: "Microphone permissions required", note: "required" },
+  {
+    icon: Video,
+    label: "Camera is optional for video preview",
+    note: "optional",
+  },
+  {
+    icon: CheckCircle2,
+    label: "Ensure you're in a quiet environment",
+    note: "recommended",
+  },
+];
 
 export default function InterviewEntry({ id }: InterviewEntryProps) {
   const [name, setName] = useState("");
@@ -18,53 +31,65 @@ export default function InterviewEntry({ id }: InterviewEntryProps) {
   const [hasStarted, setHasStarted] = useState(false);
   const [questions, setQuestions] = useState<string[]>([]);
   const [jobTitle, setJobTitle] = useState<string | undefined>();
-  const [loadingQuestions, setLoadingQuestions] = useState(true);
+  const [loadingQ, setLoadingQ] = useState(true);
+
+  const cardRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      tl.fromTo(
+        headerRef.current?.querySelectorAll(".h-el") ?? [],
+        { y: 24, opacity: 0, filter: "blur(4px)" },
+        { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.7, stagger: 0.09 },
+        0.1,
+      );
+      tl.fromTo(
+        cardRef.current,
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.65 },
+        0.3,
+      );
+    });
+    return () => ctx.revert();
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
-
-    const loadQuestions = async () => {
-      setLoadingQuestions(true);
-
+    const load = async () => {
+      setLoadingQ(true);
       try {
-        const response = await fetch(`/api/interview/${id}`);
-        if (response.ok) {
-          const data = await response.json();
+        const res = await fetch(`/api/interview/${id}`);
+        if (res.ok) {
+          const data = await res.json();
           if (!cancelled) {
             setQuestions(data.questions ?? []);
             setJobTitle(data.jobTitle);
-            setLoadingQuestions(false);
           }
           return;
         }
       } catch (err) {
-        console.error("Failed to fetch interview from API:", err);
+        console.error("API fetch failed:", err);
       }
 
-      const storedQuestions = sessionStorage.getItem(
-        `interview_questions_${id}`,
-      );
-      if (storedQuestions && !cancelled) {
+      const stored = sessionStorage.getItem(`interview_questions_${id}`);
+      if (stored && !cancelled) {
         try {
-          setQuestions(JSON.parse(storedQuestions));
-        } catch (err) {
-          console.error("Failed to parse questions from sessionStorage:", err);
-        }
+          setQuestions(JSON.parse(stored));
+        } catch {}
       }
-
-      if (!cancelled) setLoadingQuestions(false);
+      if (!cancelled) setLoadingQ(false);
     };
-
-    loadQuestions().finally(() => {
-      if (!cancelled) setLoadingQuestions(false);
+    load().finally(() => {
+      if (!cancelled) setLoadingQ(false);
     });
-
     return () => {
       cancelled = true;
     };
   }, [id]);
 
-  const handleStartInterview = () => {
+  const handleStart = () => {
     setIsStarting(true);
     setTimeout(() => {
       setIsStarting(false);
@@ -72,17 +97,17 @@ export default function InterviewEntry({ id }: InterviewEntryProps) {
     }, 800);
   };
 
-  const handleEndInterview = () => {
-    setHasStarted(false);
-    setName("");
-    setEmail("");
-  };
+  const canStart = !!name.trim() && !!email.trim() && !isStarting && !loadingQ;
 
   if (hasStarted) {
     return (
       <InterviewSession
         hasStarted={hasStarted}
-        onEnd={handleEndInterview}
+        onEnd={() => {
+          setHasStarted(false);
+          setName("");
+          setEmail("");
+        }}
         questions={questions}
         candidateName={name}
         jobTitle={jobTitle}
@@ -91,96 +116,355 @@ export default function InterviewEntry({ id }: InterviewEntryProps) {
   }
 
   return (
-    <div className=" min-h-screen  py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-      <div className="max-w-2xl w-full ">
-        <Card>
-          <div className="text-center mb-8">
-            <SectionTitle center subtitle="Please enter your details to begin">
-              AI Interview Session
-            </SectionTitle>
-            <p className="text-sm text-gray-300">Interview ID: {id}</p>
-            {!loadingQuestions && questions.length > 0 && (
-              <p className="text-sm text-green-400 mt-2">
-                {questions.length} interview questions ready
-              </p>
-            )}
-            {!loadingQuestions && questions.length === 0 && (
-              <p className="text-sm text-amber-400 mt-2">
-                No saved questions found — the AI will use general interview
-                questions
-              </p>
-            )}
-          </div>
+    <div className="min-h-screen bg-[#080808] flex flex-col items-center justify-center px-6 py-20">
+      {/* Ambient glow */}
+      <div
+        className="fixed top-0 left-1/2 -translate-x-1/2 pointer-events-none"
+        style={{
+          width: 600,
+          height: 400,
+          background:
+            "radial-gradient(ellipse at top, rgba(108,99,255,0.10) 0%, transparent 65%)",
+          zIndex: 0,
+        }}
+      />
 
-          <div className="space-y-6">
-            <Input
-              label="Full Name"
-              placeholder="John Doe"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+      <div className="relative z-10 w-full max-w-md">
+        {/* Header */}
+        <div ref={headerRef} className="text-center mb-8">
+          <div
+            className="h-el inline-flex items-center gap-2.5 px-4 py-2 rounded-full mb-5"
+            style={{
+              border: "1px solid rgba(255,255,255,0.08)",
+              background: "rgba(255,255,255,0.03)",
+              opacity: 0,
+            }}
+          >
+            <span
+              className="w-1.5 h-1.5 flex items-center justify-center rounded-full animate-pulse"
+              style={{
+                background: "#00E5BE",
+                boxShadow: "0 0 8px rgba(0,229,190,0.8)",
+              }}
             />
-
-            <Input
-              label="Email Address"
-              type="email"
-              placeholder="john@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-
-            <div className="p-4 bg-indigo-50 rounded-xl">
-              <h4 className="font-semibold text-gray-900 mb-2">
-                Before you start:
-              </h4>
-              <ul className="space-y-2 text-sm text-gray-700">
-                <li className="flex items-start">
-                  <span className="text-indigo-600 mr-2">✓</span>
-                  <span>Ensure you&apos;re in a quiet environment</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-indigo-600 mr-2">✓</span>
-                  <span>Check your microphone permissions (required)</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-indigo-600 mr-2">✓</span>
-                  <span>Camera is optional for the video preview</span>
-                </li>
-              </ul>
-            </div>
-
-            <Button
-              onClick={handleStartInterview}
-              className="w-full cursor-pointer hover:scale-105 transition-all  "
-              size="lg"
-              disabled={
-                !name || !email || isStarting || loadingQuestions
-              }
-            >
-              {isStarting
-                ? "Connecting..."
-                : loadingQuestions
-                  ? "Loading interview..."
-                  : "Start AI Interview"}
-            </Button>
-
-            <p className="text-xs text-center text-gray-500">
-              By starting this interview, you agree to be recorded for
-              evaluation purposes
-            </p>
           </div>
-        </Card>
-
-        <div className="mt-8 text-center">
-          <p className="text-sm text-gray-600">
-            Need help? Contact{" "}
-            <a
-              href="mailto:support@aijobassistant.com"
-              className="text-indigo-600 hover:underline"
+          <h1
+            className="h-el text-3xl sm:text-4xl font-bold text-white mb-3"
+            style={{
+              fontFamily: "'Syne', sans-serif",
+              letterSpacing: "-0.025em",
+              opacity: 0,
+            }}
+          >
+            Ready to{" "}
+            <span
+              style={{
+                background:
+                  "linear-gradient(135deg, #a39bff 0%, #6C63FF 50%, #00E5BE 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
             >
-              support@aijobassistant.com
-            </a>
+              begin?
+            </span>
+          </h1>
+          <p
+            className="h-el text-sm leading-relaxed"
+            style={{
+              color: "rgba(255,255,255,0.30)",
+              fontFamily: "'DM Sans', sans-serif",
+              opacity: 0,
+            }}
+          >
+            Enter your details below to start your AI-powered interview session.
           </p>
         </div>
+
+        {/* Card */}
+        <div
+          ref={cardRef}
+          className="rounded-2xl p-6 sm:p-8"
+          style={{
+            border: "1px solid rgba(255,255,255,0.07)",
+            background: "rgba(255,255,255,0.02)",
+            backdropFilter: "blur(12px)",
+            opacity: 0,
+          }}
+        >
+          {/* Interview ID + status */}
+          <div
+            className="flex items-center justify-between mb-7 pb-5"
+            style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+          >
+            <div className="flex items-center gap-2">
+              <Hash
+                className="w-3.5 h-3.5"
+                style={{ color: "rgba(255,255,255,0.20)" }}
+              />
+              <span
+                className="text-xs font-mono"
+                style={{ color: "rgba(255,255,255,0.28)" }}
+              >
+                Interview ID:{" "}
+                <span style={{ color: "rgba(255,255,255,0.50)" }}>{id}</span>
+              </span>
+            </div>
+            {!loadingQ && (
+              <span
+                className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-1 rounded-full"
+                style={
+                  questions.length > 0
+                    ? {
+                        background: "rgba(0,229,190,0.10)",
+                        color: "#00E5BE",
+                        border: "1px solid rgba(0,229,190,0.22)",
+                      }
+                    : {
+                        background: "rgba(255,181,71,0.10)",
+                        color: "#FFB547",
+                        border: "1px solid rgba(255,181,71,0.22)",
+                      }
+                }
+              >
+                {questions.length > 0
+                  ? `${questions.length} questions`
+                  : "General questions"}
+              </span>
+            )}
+            {loadingQ && (
+              <Loader2
+                className="w-4 h-4 animate-spin"
+                style={{ color: "rgba(255,255,255,0.25)" }}
+              />
+            )}
+          </div>
+
+          {jobTitle && (
+            <div
+              className="mb-5 px-3.5 py-2.5 rounded-xl"
+              style={{
+                background: "rgba(108,99,255,0.06)",
+                border: "1px solid rgba(108,99,255,0.14)",
+              }}
+            >
+              <p
+                className="text-xs"
+                style={{
+                  color: "rgba(255,255,255,0.35)",
+                  fontFamily: "'DM Sans', sans-serif",
+                }}
+              >
+                Role:{" "}
+                <span style={{ color: "#8B82FF", fontWeight: 600 }}>
+                  {jobTitle}
+                </span>
+              </p>
+            </div>
+          )}
+
+          <div className="space-y-4 mb-6">
+            {/* Name */}
+            {[
+              {
+                label: "Full Name",
+                type: "text",
+                placeholder: "John Doe",
+                value: name,
+                setter: setName,
+              },
+              {
+                label: "Email Address",
+                type: "email",
+                placeholder: "john@example.com",
+                value: email,
+                setter: setEmail,
+              },
+            ].map(({ label, type, placeholder, value, setter }) => (
+              <div key={label}>
+                <p
+                  className="text-xs font-mono uppercase tracking-wider mb-2"
+                  style={{ color: "rgba(255,255,255,0.28)" }}
+                >
+                  {label}
+                </p>
+                <input
+                  type={type}
+                  placeholder={placeholder}
+                  value={value}
+                  onChange={(e) => setter(e.target.value)}
+                  className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all duration-200 placeholder:text-[rgba(255,255,255,0.18)]"
+                  style={{
+                    background: "rgba(255,255,255,0.03)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    color: "rgba(255,255,255,0.78)",
+                    fontFamily: "'DM Sans', sans-serif",
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(108,99,255,0.45)";
+                    e.currentTarget.style.boxShadow =
+                      "0 0 0 3px rgba(108,99,255,0.08)";
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor =
+                      "rgba(255,255,255,0.08)";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Pre-checks */}
+          <div
+            className="rounded-xl p-4 mb-6"
+            style={{
+              background: "rgba(108,99,255,0.05)",
+              border: "1px solid rgba(108,99,255,0.12)",
+            }}
+          >
+            <p
+              className="text-[10px] font-mono uppercase tracking-wider mb-3"
+              style={{ color: "rgba(108,99,255,0.60)" }}
+            >
+              Before you start
+            </p>
+            <ul className="space-y-2.5">
+              {PRE_CHECKS.map(({ icon: Icon, label, note }) => (
+                <li key={label} className="flex items-center gap-2.5">
+                  <div
+                    className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0"
+                    style={{
+                      background: "rgba(108,99,255,0.14)",
+                      border: "1px solid rgba(108,99,255,0.22)",
+                    }}
+                  >
+                    <Icon className="w-3 h-3" style={{ color: "#8B82FF" }} />
+                  </div>
+                  <span
+                    className="text-xs flex-1"
+                    style={{
+                      color: "rgba(255,255,255,0.45)",
+                      fontFamily: "'DM Sans', sans-serif",
+                    }}
+                  >
+                    {label}
+                  </span>
+                  <span
+                    className="text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full shrink-0"
+                    style={
+                      note === "required"
+                        ? {
+                            background: "rgba(255,124,92,0.12)",
+                            color: "#FF7C5C",
+                          }
+                        : note === "optional"
+                          ? {
+                              background: "rgba(255,255,255,0.06)",
+                              color: "rgba(255,255,255,0.30)",
+                            }
+                          : {
+                              background: "rgba(0,229,190,0.08)",
+                              color: "#00E5BE",
+                            }
+                    }
+                  >
+                    {note}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Start button */}
+          <button
+            onClick={handleStart}
+            disabled={!canStart}
+            className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl text-sm font-semibold transition-all duration-300"
+            style={{
+              background: !canStart
+                ? "rgba(255,255,255,0.04)"
+                : isStarting
+                  ? "rgba(108,99,255,0.40)"
+                  : "linear-gradient(135deg, #6C63FF, #5a52d5)",
+              color: !canStart ? "rgba(255,255,255,0.20)" : "#fff",
+              fontFamily: "'DM Sans', sans-serif",
+              boxShadow:
+                canStart && !isStarting
+                  ? "0 0 30px rgba(108,99,255,0.28), inset 0 1px 0 rgba(255,255,255,0.15)"
+                  : "none",
+              cursor: !canStart ? "not-allowed" : "pointer",
+              border: !canStart ? "1px solid rgba(255,255,255,0.07)" : "none",
+            }}
+            onMouseEnter={(e) => {
+              if (canStart && !isStarting)
+                gsap.to(e.currentTarget, {
+                  scale: 1.02,
+                  boxShadow: "0 0 50px rgba(108,99,255,0.45)",
+                  duration: 0.25,
+                });
+            }}
+            onMouseLeave={(e) =>
+              gsap.to(e.currentTarget, {
+                scale: 1,
+                boxShadow:
+                  canStart && !isStarting
+                    ? "0 0 30px rgba(108,99,255,0.28)"
+                    : "none",
+                duration: 0.25,
+              })
+            }
+          >
+            {isStarting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Connecting...
+              </>
+            ) : loadingQ ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Loading interview...
+              </>
+            ) : (
+              <>
+                <CheckCircle2 className="w-4 h-4" />
+                Start AI Interview
+              </>
+            )}
+          </button>
+
+          <p
+            className="text-center text-[11px] mt-4"
+            style={{
+              color: "rgba(255,255,255,0.18)",
+              fontFamily: "'DM Sans', sans-serif",
+            }}
+          >
+            By starting, you agree to be recorded for evaluation purposes.
+          </p>
+        </div>
+
+        {/* Footer */}
+        <p
+          className="text-center text-xs mt-6"
+          style={{
+            color: "rgba(255,255,255,0.20)",
+            fontFamily: "'DM Sans', sans-serif",
+          }}
+        >
+          Need help?{" "}
+          <a
+            href="mailto:support@aijobassistant.com"
+            className="transition-colors duration-200"
+            style={{ color: "rgba(108,99,255,0.65)" }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#8B82FF")}
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.color = "rgba(108,99,255,0.65)")
+            }
+          >
+            support@aijobassistant.com
+          </a>
+        </p>
       </div>
     </div>
   );

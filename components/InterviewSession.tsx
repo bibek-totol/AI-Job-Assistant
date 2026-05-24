@@ -1,8 +1,9 @@
-"use client";
+"use client"
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { Mic, MicOff, Video, VideoOff, PhoneOff } from "lucide-react";
-import toast from "react-hot-toast";
+import { useState, useEffect, useRef, useCallback } from "react"
+import { Mic, MicOff, Video, VideoOff, PhoneOff, Wifi, WifiOff, Clock } from "lucide-react"
+import toast from "react-hot-toast"
+import gsap from "gsap"
 import {
   buildAssistantOverrides,
   buildInterviewSystemPrompt,
@@ -10,14 +11,21 @@ import {
   getActiveVapiClient,
   startVapiSession,
   stopVapiSession,
-} from "@/lib/vapi-interview";
+} from "@/lib/vapi-interview"
 
 interface InterviewSessionProps {
-  onEnd: () => void;
-  hasStarted: boolean;
-  questions?: string[];
-  candidateName?: string;
-  jobTitle?: string;
+  onEnd: () => void
+  hasStarted: boolean
+  questions?: string[]
+  candidateName?: string
+  jobTitle?: string
+}
+
+const STATUS_META: Record<string, { label: string; color: string; bg: string }> = {
+  connecting: { label: "Connecting",  color: "#FFB547", bg: "rgba(255,181,71,0.15)" },
+  connected:  { label: "Live",        color: "#00E5BE", bg: "rgba(0,229,190,0.15)" },
+  ended:      { label: "Ended",       color: "rgba(255,255,255,0.30)", bg: "rgba(255,255,255,0.06)" },
+  error:      { label: "Error",       color: "#FF7C5C", bg: "rgba(255,124,92,0.15)" },
 }
 
 export default function InterviewSession({
@@ -27,337 +35,347 @@ export default function InterviewSession({
   candidateName,
   jobTitle,
 }: InterviewSessionProps) {
-  const [isMicOn, setIsMicOn] = useState(true);
-  const [isVideoOn, setIsVideoOn] = useState(true);
-  const [aiSpeaking, setAiSpeaking] = useState(false);
-  const [isVapiReady, setIsVapiReady] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState("connecting");
-  const [endReason, setEndReason] = useState<string | null>(null);
-  const [micReady, setMicReady] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const mediaStreamRef = useRef<MediaStream | null>(null);
-  const interviewContextRef = useRef({
-    questions,
-    candidateName,
-    jobTitle,
-  });
+  const [isMicOn, setIsMicOn]             = useState(true)
+  const [isVideoOn, setIsVideoOn]         = useState(true)
+  const [aiSpeaking, setAiSpeaking]       = useState(false)
+  const [isVapiReady, setIsVapiReady]     = useState(false)
+  const [connectionStatus, setConnectionStatus] = useState("connecting")
+  const [elapsed, setElapsed]             = useState(0)
 
-  interviewContextRef.current = { questions, candidateName, jobTitle };
+  const videoRef         = useRef<HTMLVideoElement>(null)
+  const mediaStreamRef   = useRef<MediaStream | null>(null)
+  const orbRef           = useRef<HTMLDivElement>(null)
+  const pulseRef         = useRef<HTMLDivElement>(null)
+  const timerRef         = useRef<ReturnType<typeof setInterval> | null>(null)
+  const ctxRef           = useRef<gsap.Context | null>(null)
 
-  const attachVideoStream = useCallback((stream: MediaStream | null) => {
-    if (videoRef.current) {
-      videoRef.current.srcObject = stream;
+  const interviewCtx = useRef({ questions, candidateName, jobTitle })
+  interviewCtx.current = { questions, candidateName, jobTitle }
+
+  // ─── AI orb animation ───
+  useEffect(() => {
+    if (!orbRef.current || !pulseRef.current) return
+    ctxRef.current = gsap.context(() => {
+      // Idle breathe
+      gsap.to(orbRef.current, { scale: aiSpeaking ? 1.15 : 1, duration: aiSpeaking ? 0.3 : 0.8, ease: aiSpeaking ? "power2.out" : "sine.inOut" })
+      gsap.to(orbRef.current, { boxShadow: aiSpeaking ? "0 0 80px rgba(108,99,255,0.65), 0 0 30px rgba(0,229,190,0.3)" : "0 0 40px rgba(108,99,255,0.30)", duration: 0.4 })
+
+      // Pulse ring
+      if (aiSpeaking) {
+        gsap.fromTo(pulseRef.current, { scale: 1, opacity: 0.6 }, { scale: 2.2, opacity: 0, duration: 1.2, ease: "power2.out", repeat: -1 })
+      } else {
+        gsap.killTweensOf(pulseRef.current)
+        gsap.set(pulseRef.current, { scale: 1, opacity: 0 })
+      }
+    })
+    return () => ctxRef.current?.revert()
+  }, [aiSpeaking])
+
+  // ─── Timer ───
+  useEffect(() => {
+    if (connectionStatus === "connected") {
+      timerRef.current = setInterval(() => setElapsed((s) => s + 1), 1000)
+    } else {
+      if (timerRef.current) clearInterval(timerRef.current)
     }
-  }, []);
+    return () => { if (timerRef.current) clearInterval(timerRef.current) }
+  }, [connectionStatus])
 
-  // Local camera preview only — separate from Vapi/Daily lifecycle
+  const fmtTime = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`
+
+  // ─── Camera ───
+  const attachVideo = useCallback((stream: MediaStream | null) => {
+    if (videoRef.current) videoRef.current.srcObject = stream
+  }, [])
+
   useEffect(() => {
-    if (!hasStarted) return;
-
-    let cancelled = false;
-
-    const setupMedia = async () => {
+    if (!hasStarted) return
+    let cancelled = false
+    const setup = async () => {
       if (!isVideoOn) {
-        mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
-        mediaStreamRef.current = null;
-        attachVideoStream(null);
-        return;
+        mediaStreamRef.current?.getTracks().forEach((t) => t.stop())
+        mediaStreamRef.current = null
+        attachVideo(null)
+        return
       }
-
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 } },
-          audio: false,
-        });
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false })
+        if (cancelled) { stream.getTracks().forEach((t) => t.stop()); return }
+        mediaStreamRef.current?.getTracks().forEach((t) => t.stop())
+        mediaStreamRef.current = stream
+        attachVideo(stream)
+      } catch { toast.error("Camera unavailable. Video preview disabled.") }
+    }
+    setup()
+    return () => { cancelled = true }
+  }, [hasStarted, isVideoOn, attachVideo])
 
-        if (cancelled) {
-          stream.getTracks().forEach((track) => track.stop());
-          return;
-        }
-
-        mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
-        mediaStreamRef.current = stream;
-        attachVideoStream(stream);
-      } catch (error) {
-        console.error("Camera error:", error);
-        toast.error("Could not access camera. Video preview disabled.");
-      }
-    };
-
-    setupMedia();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [hasStarted, isVideoOn, attachVideoStream]);
-
-  // Vapi voice interview — runs once when session starts
+  // ─── Vapi session ───
   useEffect(() => {
-    if (!hasStarted) return;
+    if (!hasStarted) return
+    let cancelled = false
 
-    let cancelled = false;
+    const start = async () => {
+      const apiKey     = process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY
+      const assistantId = process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID
+      const { questions: qs, candidateName: name, jobTitle: title } = interviewCtx.current
 
-    const startInterview = async () => {
-      const apiKey = process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY;
-      const assistantId = process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID;
-      const { questions: qs, candidateName: name, jobTitle: title } =
-        interviewContextRef.current;
-
-      if (!apiKey) {
-        setConnectionStatus("error");
-        toast.error("Missing NEXT_PUBLIC_VAPI_PUBLIC_KEY in environment");
-        return;
+      if (!apiKey || !assistantId) {
+        setConnectionStatus("error")
+        toast.error("Missing Vapi environment variables")
+        return
       }
-
-      if (!assistantId) {
-        setConnectionStatus("error");
-        toast.error("Missing NEXT_PUBLIC_VAPI_ASSISTANT_ID in environment");
-        return;
-      }
-
-      setConnectionStatus("connecting");
 
       try {
         try {
-          const micStream = await navigator.mediaDevices.getUserMedia({
-            audio: true,
-          });
-          micStream.getTracks().forEach((track) => track.stop());
-          setMicReady(true);
+          const s = await navigator.mediaDevices.getUserMedia({ audio: true })
+          s.getTracks().forEach((t) => t.stop())
         } catch {
-          setMicReady(false);
-          toast.error(
-            "Microphone access denied. Allow mic permission to continue the interview.",
-          );
-          setConnectionStatus("error");
-          return;
+          setConnectionStatus("error")
+          toast.error("Microphone access denied. Please allow mic permissions.")
+          return
         }
 
-        const overrides = buildAssistantOverrides(qs, name, title);
-        const systemPrompt = buildInterviewSystemPrompt(qs, name, title);
-
-        await startVapiSession(apiKey, assistantId, overrides, {
-          systemPrompt,
-          onCallStart: () => {
-            if (cancelled) return;
-            setIsVapiReady(true);
-            setConnectionStatus("connected");
-            toast.success("Connected! Say \"I'm ready\" to begin.");
-          },
-          onCallEnd: () => {
-            if (cancelled) return;
-            setIsVapiReady(false);
-            setConnectionStatus("ended");
-          },
-          onSpeechStart: () => {
-            if (!cancelled) setAiSpeaking(true);
-          },
-          onSpeechEnd: () => {
-            if (!cancelled) setAiSpeaking(false);
-          },
+        await startVapiSession(apiKey, assistantId, buildAssistantOverrides(qs, name, title), {
+          systemPrompt: buildInterviewSystemPrompt(qs, name, title),
+          onCallStart:  () => { if (!cancelled) { setIsVapiReady(true); setConnectionStatus("connected"); toast.success("Connected! Say \"I'm ready\" to begin.") } },
+          onCallEnd:    () => { if (!cancelled) { setIsVapiReady(false); setConnectionStatus("ended") } },
+          onSpeechStart: () => { if (!cancelled) setAiSpeaking(true) },
+          onSpeechEnd:   () => { if (!cancelled) setAiSpeaking(false) },
           onMessage: (message) => {
-            const msg = message as {
-              type?: string;
-              status?: string;
-              endedReason?: string;
-            };
-            if (
-              msg.type === "status-update" &&
-              msg.status === "ended" &&
-              msg.endedReason
-            ) {
-              setEndReason(msg.endedReason);
-              if (msg.endedReason === "silence-timed-out") {
-                toast.error(
-                  "Interview ended: no speech detected. Check your microphone and try again.",
-                  { duration: 6000 },
-                );
-              }
+            const msg = message as { type?: string; status?: string; endedReason?: string }
+            if (msg?.type === "status-update" && msg.status === "ended" && msg.endedReason === "silence-timed-out") {
+              toast.error("Interview ended: no speech detected. Check your microphone.", { duration: 6000 })
             }
           },
           onError: (error) => {
-            if (cancelled) return;
-            const typed = error as { type?: string } | null;
-            if (typed?.type === "daily-error") return;
-            console.error("Vapi error:", error);
-            setConnectionStatus("error");
-            toast.error(`Interview error: ${formatVapiError(error)}`);
+            if (cancelled) return
+            const typed = error as { type?: string } | null
+            if (typed?.type === "daily-error") return
+            setConnectionStatus("error")
+            toast.error(`Interview error: ${formatVapiError(error)}`)
           },
-        });
-
-        if (cancelled) {
-          await stopVapiSession();
-        }
+        })
+        if (cancelled) await stopVapiSession()
       } catch (error) {
-        if (cancelled) return;
-        console.error("Error starting Vapi:", error);
-        setConnectionStatus("error");
-        toast.error(formatVapiError(error));
+        if (cancelled) return
+        setConnectionStatus("error")
+        toast.error(formatVapiError(error))
       }
-    };
+    }
 
-    startInterview();
+    start()
+    return () => { cancelled = true; void stopVapiSession() }
+  }, [hasStarted])
 
-    return () => {
-      cancelled = true;
-      void stopVapiSession();
-    };
-  }, [hasStarted]);
-
-  // Cleanup media on unmount
-  useEffect(() => {
-    return () => {
-      mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
-      mediaStreamRef.current = null;
-    };
-  }, []);
+  useEffect(() => () => {
+    mediaStreamRef.current?.getTracks().forEach((t) => t.stop())
+  }, [])
 
   const toggleMic = () => {
-    const next = !isMicOn;
-    setIsMicOn(next);
-    const vapi = getActiveVapiClient();
-    vapi?.setMuted(!next);
-  };
+    const next = !isMicOn
+    setIsMicOn(next)
+    getActiveVapiClient()?.setMuted(!next)
+  }
 
-  const toggleVideo = () => setIsVideoOn(!isVideoOn);
+  const handleEnd = async () => {
+    await stopVapiSession()
+    mediaStreamRef.current?.getTracks().forEach((t) => t.stop())
+    onEnd()
+  }
 
-  const handleEndInterview = async () => {
-    await stopVapiSession();
-    mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
-    mediaStreamRef.current = null;
-    onEnd();
-  };
+  const statusMeta = STATUS_META[connectionStatus] ?? STATUS_META.connecting
 
   return (
-    <div className="fixed inset-0 bg-gray-900 z-50 flex flex-col">
-      <div className="bg-slate-700 px-6 py-4 flex justify-between items-center shadow-md">
-        <div className="flex items-center space-x-2">
-          <div
-            className={`w-3 h-3 rounded-full animate-pulse ${isVapiReady ? "bg-green-500" : connectionStatus === "error" ? "bg-red-500" : "bg-yellow-500"}`}
-          />
-          <span className="text-white font-medium">
-            Live Interview Session ({connectionStatus})
+    <div className="fixed inset-0 z-50 flex flex-col" style={{ background: "#080808" }}>
+
+      {/* ── Top bar ── */}
+      <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(0,0,0,0.60)", backdropFilter: "blur(12px)" }}>
+        <div className="flex items-center gap-3">
+          {/* Brand */}
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, #6C63FF, #5a52d5)" }}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M7 1L13 4V10L7 13L1 10V4L7 1Z" stroke="white" strokeWidth="1.5" strokeLinejoin="round" />
+              <path d="M7 4L10 5.5V8.5L7 10L4 8.5V5.5L7 4Z" fill="white" />
+            </svg>
+          </div>
+          <span className="text-sm font-bold text-white" style={{ fontFamily: "'Syne', sans-serif" }}>
+            {jobTitle ? `AI Interview · ${jobTitle}` : "AI Interview Session"}
           </span>
         </div>
-        <div className="text-gray-400 text-sm">
-          {new Date().toLocaleTimeString()}
+
+        <div className="flex items-center gap-3">
+          {/* Timer */}
+          {connectionStatus === "connected" && (
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <Clock className="w-3.5 h-3.5" style={{ color: "rgba(255,255,255,0.35)" }} />
+              <span className="text-xs font-mono text-white">{fmtTime(elapsed)}</span>
+            </div>
+          )}
+          {/* Status badge */}
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: statusMeta.bg, border: `1px solid ${statusMeta.color}40` }}>
+            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: statusMeta.color }} />
+            <span className="text-xs font-mono uppercase tracking-wider" style={{ color: statusMeta.color }}>{statusMeta.label}</span>
+          </div>
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col md:flex-row p-4 gap-4 overflow-hidden">
-        <div className="flex-1 bg-slate-700 rounded-2xl overflow-hidden relative border border-gray-700 shadow-2xl">
-          <div className="absolute top-4 left-4 bg-black/50 px-3 py-1 rounded-full text-white text-sm z-10">
-            You
+      {/* ── Main panels ── */}
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3 p-3 overflow-hidden">
+
+        {/* Candidate camera */}
+        <div className="relative rounded-2xl overflow-hidden" style={{ background: "#0c0c0c", border: "1px solid rgba(255,255,255,0.07)" }}>
+          <div className="absolute top-3 left-3 z-10 flex items-center gap-2 px-2.5 py-1 rounded-full" style={{ background: "rgba(0,0,0,0.60)", backdropFilter: "blur(8px)" }}>
+            <div className="w-1.5 h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.50)" }} />
+            <span className="text-xs text-white" style={{ fontFamily: "'DM Sans', sans-serif" }}>{candidateName || "You"}</span>
           </div>
+
           {isVideoOn ? (
-            <video
-              ref={videoRef}
-              autoPlay
-              muted
-              playsInline
-              className="w-full h-full object-cover transform scale-x-[-1]"
-            />
+            <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gray-700">
-              <div className="w-24 h-24 bg-gray-600 rounded-full flex items-center justify-center">
-                <span className="text-4xl">👤</span>
+            <div className="w-full h-full flex flex-col items-center justify-center min-h-[200px]">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-3" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                <VideoOff className="w-7 h-7" style={{ color: "rgba(255,255,255,0.25)" }} />
               </div>
+              <p className="text-xs" style={{ color: "rgba(255,255,255,0.25)", fontFamily: "'DM Sans', sans-serif" }}>Camera off</p>
             </div>
           )}
-          <div className="absolute bottom-4 left-4 flex space-x-2">
-            {!isMicOn && (
-              <div className="bg-red-500/80 p-2 rounded-full">
-                <MicOff className="w-4 h-4 text-white" />
-              </div>
-            )}
-          </div>
+
+          {!isMicOn && (
+            <div className="absolute bottom-3 left-3 p-2 rounded-full" style={{ background: "rgba(255,124,92,0.85)" }}>
+              <MicOff className="w-4 h-4 text-white" />
+            </div>
+          )}
         </div>
 
-        <div className="flex-1 bg-linear-to-br from-indigo-900 to-purple-900 rounded-2xl overflow-hidden relative flex flex-col items-center justify-center border border-indigo-500/30 shadow-2xl">
-          <div className="absolute top-4 left-4 bg-black/50 px-3 py-1 rounded-full text-white text-sm">
-            AI Interviewer
+        {/* AI orb panel */}
+        <div
+          className="relative rounded-2xl flex flex-col items-center justify-center overflow-hidden min-h-[220px]"
+          style={{ background: "#0c0c0c", border: "1px solid rgba(108,99,255,0.18)" }}
+        >
+          {/* Grid overlay */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
+          {/* Ambient */}
+          <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at center, rgba(108,99,255,0.12) 0%, transparent 65%)" }} />
+
+          <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full" style={{ background: "rgba(0,0,0,0.60)", backdropFilter: "blur(8px)" }}>
+            <span className="text-xs text-white" style={{ fontFamily: "'DM Sans', sans-serif" }}>AI Interviewer</span>
           </div>
 
-          <div className="relative">
+          {/* Orb */}
+          <div className="relative flex items-center justify-center">
+            {/* Pulse ring */}
             <div
-              className={`absolute inset-0 bg-cyan-500 blur-3xl opacity-20 transition-all duration-500 ${aiSpeaking ? "scale-150 opacity-40" : "scale-100"}`}
+              ref={pulseRef}
+              className="absolute w-36 h-36 rounded-full pointer-events-none"
+              style={{ border: "1px solid rgba(108,99,255,0.4)", opacity: 0 }}
             />
-            <div className="relative w-48 h-48 rounded-full bg-black/30 backdrop-blur-sm border border-cyan-500/30 flex items-center justify-center">
-              <div
-                className={`w-32 h-32 rounded-full bg-linear-to-tr from-cyan-500 to-blue-600 transition-all duration-300 shadow-[0_0_50px_rgba(6,182,212,0.5)] ${aiSpeaking ? "scale-110" : "scale-100"}`}
-              >
-                <div className="w-full h-full rounded-full bg-[url('https://img.freepik.com/free-vector/artificial-intelligence-robot-face-technology-background_1017-23146.jpg')] bg-cover bg-center opacity-80 mix-blend-overlay" />
-              </div>
+            {/* Main orb */}
+            <div
+              ref={orbRef}
+              className="w-28 h-28 rounded-full relative overflow-hidden"
+              style={{
+                background: "linear-gradient(135deg, #6C63FF 0%, #4a43c0 50%, #00E5BE 100%)",
+                boxShadow: "0 0 40px rgba(108,99,255,0.30)",
+                willChange: "transform, box-shadow",
+              }}
+            >
+              {/* Gloss overlay */}
+              <div className="absolute inset-0 rounded-full" style={{ background: "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.18) 0%, transparent 60%)" }} />
+              {/* Speaking wave bars */}
+              {aiSpeaking && (
+                <div className="absolute inset-0 flex items-center justify-center gap-1">
+                  {[1, 2, 3, 4, 3].map((h, i) => (
+                    <div
+                      key={i}
+                      className="w-1 rounded-full"
+                      style={{
+                        height: `${h * 10}px`,
+                        background: "rgba(255,255,255,0.7)",
+                        animation: `bounce ${0.4 + i * 0.08}s ease-in-out infinite alternate`,
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-            {aiSpeaking && (
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 border border-cyan-500/20 rounded-full animate-ping" />
+          </div>
+
+          {/* Status text */}
+          <div className="mt-6 text-center px-4">
+            <p className="text-sm font-semibold text-white mb-1" style={{ fontFamily: "'Syne', sans-serif" }}>
+              {aiSpeaking ? "Speaking..." : connectionStatus === "connected" ? "Listening..." : connectionStatus === "connecting" ? "Connecting..." : "Session ended"}
+            </p>
+            {isVapiReady && !aiSpeaking && (
+              <p className="text-xs" style={{ color: "rgba(255,255,255,0.30)", fontFamily: "'DM Sans', sans-serif" }}>
+                Say "I'm ready" to begin
+              </p>
+            )}
+            {questions.length > 0 && (
+              <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.20)", fontFamily: "'DM Sans', sans-serif" }}>
+                {questions.length} questions loaded
+              </p>
             )}
           </div>
-
-          <div className="mt-8 text-cyan-200 font-medium tracking-wide">
-            {aiSpeaking ? "Speaking..." : "Listening..."}
-          </div>
-
-          {isVapiReady && !aiSpeaking && (
-            <p className="mt-3 px-6 text-center text-amber-200 text-sm animate-pulse">
-              Speak clearly into your microphone — say &quot;I&apos;m ready&quot; to
-              start
-            </p>
-          )}
-
-          {endReason === "silence-timed-out" && (
-            <p className="mt-3 px-6 text-center text-red-300 text-sm">
-              Call ended due to silence. Unmute your mic and restart the interview.
-            </p>
-          )}
-
-          {questions.length > 0 && (
-            <p className="mt-4 px-6 text-center text-cyan-100/70 text-sm">
-              {questions.length} tailored questions loaded for this session
-            </p>
-          )}
         </div>
       </div>
 
-      <div className="bg-slate-700 p-6 flex justify-center items-center space-x-6">
+      {/* ── Control bar ── */}
+      <div className="shrink-0 px-6 py-5 flex items-center justify-center gap-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)", background: "rgba(0,0,0,0.60)", backdropFilter: "blur(12px)" }}>
+        {/* Mic */}
         <button
           onClick={toggleMic}
-          className={`p-4 rounded-full transition-all ${
-            isMicOn
-              ? "bg-gray-700 hover:bg-gray-600 text-white"
-              : "bg-red-500 hover:bg-red-600 text-white"
-          }`}
+          className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200"
+          style={{
+            background: isMicOn ? "rgba(255,255,255,0.07)" : "rgba(255,124,92,0.18)",
+            border: `1px solid ${isMicOn ? "rgba(255,255,255,0.12)" : "rgba(255,124,92,0.35)"}`,
+          }}
+          onMouseEnter={(e) => gsap.to(e.currentTarget, { scale: 1.08, duration: 0.2 })}
+          onMouseLeave={(e) => gsap.to(e.currentTarget, { scale: 1, duration: 0.2 })}
+          title={isMicOn ? "Mute microphone" : "Unmute microphone"}
         >
-          {isMicOn ? (
-            <Mic className="w-6 h-6" />
-          ) : (
-            <MicOff className="w-6 h-6" />
-          )}
+          {isMicOn
+            ? <Mic className="w-5 h-5 text-white" />
+            : <MicOff className="w-5 h-5" style={{ color: "#FF7C5C" }} />}
         </button>
 
+        {/* Video */}
         <button
-          onClick={toggleVideo}
-          className={`p-4 rounded-full transition-all ${
-            isVideoOn
-              ? "bg-gray-700 hover:bg-gray-600 text-white"
-              : "bg-red-500 hover:bg-red-600 text-white"
-          }`}
+          onClick={() => setIsVideoOn((v) => !v)}
+          className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200"
+          style={{
+            background: isVideoOn ? "rgba(255,255,255,0.07)" : "rgba(255,124,92,0.18)",
+            border: `1px solid ${isVideoOn ? "rgba(255,255,255,0.12)" : "rgba(255,124,92,0.35)"}`,
+          }}
+          onMouseEnter={(e) => gsap.to(e.currentTarget, { scale: 1.08, duration: 0.2 })}
+          onMouseLeave={(e) => gsap.to(e.currentTarget, { scale: 1, duration: 0.2 })}
+          title={isVideoOn ? "Turn off camera" : "Turn on camera"}
         >
-          {isVideoOn ? (
-            <Video className="w-6 h-6" />
-          ) : (
-            <VideoOff className="w-6 h-6" />
-          )}
+          {isVideoOn
+            ? <Video className="w-5 h-5 text-white" />
+            : <VideoOff className="w-5 h-5" style={{ color: "#FF7C5C" }} />}
         </button>
 
+        {/* End call */}
         <button
-          onClick={handleEndInterview}
-          className="px-8 py-4 bg-red-600 hover:bg-red-700 text-white rounded-full font-semibold flex items-center space-x-2 transition-all hover:scale-105"
+          onClick={handleEnd}
+          className="flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm text-white transition-all duration-200"
+          style={{ background: "#c0392b", boxShadow: "0 0 20px rgba(192,57,43,0.35)" }}
+          onMouseEnter={(e) => gsap.to(e.currentTarget, { scale: 1.05, boxShadow: "0 0 35px rgba(192,57,43,0.60)", duration: 0.25 })}
+          onMouseLeave={(e) => gsap.to(e.currentTarget, { scale: 1, boxShadow: "0 0 20px rgba(192,57,43,0.35)", duration: 0.25 })}
         >
-          <PhoneOff className="w-5 h-5" />
-          <span>End Interview</span>
+          <PhoneOff className="w-4 h-4" />
+          End Interview
         </button>
       </div>
+
+      {/* Wave animation */}
+      <style>{`
+        @keyframes bounce {
+          from { transform: scaleY(0.5); }
+          to   { transform: scaleY(1.5); }
+        }
+      `}</style>
     </div>
-  );
+  )
 }
