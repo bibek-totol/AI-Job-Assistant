@@ -237,6 +237,17 @@ export default function CoverLetterGenerator() {
     return () => ctx.revert();
   }, []);
 
+  // Animate form in whenever resetting letter
+  useEffect(() => {
+    if (!generatedLetter && formRef.current) {
+      gsap.fromTo(
+        formRef.current,
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" },
+      );
+    }
+  }, [generatedLetter]);
+
   // Animate result panel in
   useEffect(() => {
     if (generatedLetter && resultRef.current) {
@@ -383,7 +394,6 @@ export default function CoverLetterGenerator() {
               border: "1px solid rgba(255,255,255,0.07)",
               background: "rgba(255,255,255,0.02)",
               backdropFilter: "blur(12px)",
-              opacity: 0,
             }}
           >
             <div className="flex items-center gap-2 mb-8">

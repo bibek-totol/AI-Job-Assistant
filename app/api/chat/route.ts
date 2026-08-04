@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { completeWithFallback } from "@/lib/openrouter";
+import { runLangGraphAgent } from "@/lib/gemini-langgraph";
 
 export async function POST(req: Request) {
   try {
@@ -12,24 +12,22 @@ export async function POST(req: Request) {
       );
     }
 
-    const reply = await completeWithFallback(
-      "chat",
-      [
-        {
-          role: "system",
-          content:
-            "You are an AI Job Assistant. Help users with jobs, resumes, interviews, career guidance, and professional advice. Be concise, practical, and up to date with modern hiring practices.",
-        },
-        { role: "user", content: message },
-      ],
-      { temperature: 0.7, max_tokens: 800 },
-    );
+    const systemPrompt = `You are an intelligent AI Job Assistant powered by Google Gemini and LangGraph.
+You help users with job searches, resume tips, interview preparation, career guidance, and professional advice.
+You have access to an online browsing tool (online_web_search). Use it whenever a user asks for up-to-date real-world information, specific company details, salary trends, or current industry news.
+Be concise, practical, engaging, and accurate.`;
+
+    const reply = await runLangGraphAgent({
+      systemPrompt,
+      userMessage: message,
+      temperature: 0.7,
+    });
 
     return NextResponse.json({ reply });
   } catch (error) {
-    console.error("Chat error:", error);
+    console.error("Chat error with Gemini LangGraph:", error);
     return NextResponse.json(
-      { reply: "AI service failed. Try again later." },
+      { reply: "AI service encountered an issue. Please try again." },
       { status: 500 },
     );
   }

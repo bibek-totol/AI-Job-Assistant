@@ -1,9 +1,8 @@
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
-import { completeWithFallback } from "@/lib/openrouter";
-
-const PDFParser = require("pdf2json");
+import { processAndQueryPDF } from "@/lib/vectorstore";
+import { runLangGraphAgent } from "@/lib/gemini-langgraph";
 
 export async function POST(request: Request) {
   try {
@@ -26,97 +25,83 @@ export async function POST(request: Request) {
       );
     }
 
-    let searchQuery = "";
-
-    if (jobGoal) {
-      searchQuery = `best online courses for ${jobGoal} available in ${country}`;
-    } else if (file) {
+    let resumeContext = "";
+    if (file) {
       const buffer = Buffer.from(await file.arrayBuffer());
-      const resumeText = await new Promise<string>((resolve, reject) => {
-        const pdfParser = new PDFParser(null, 1);
-        pdfParser.on(
-          "pdfParser_dataError",
-          (errData: { parserError: Error }) => reject(errData.parserError),
-        );
-        pdfParser.on("pdfParser_dataReady", () => {
-          resolve(pdfParser.getRawTextContent());
-        });
-        pdfParser.parseBuffer(buffer);
-      });
+      // PDF text extraction -> Chunking -> Vector Embeddings -> Retrieval
+      const { fullText, relevantChunks } = await processAndQueryPDF(
+        buffer,
+        jobGoal || "technical skills framework programming tools certifications missing skills",
+        6,
+      );
+      resumeContext = relevantChunks.length > 0
+        ? relevantChunks.join("\n\n")
+        : fullText.slice(0, 4000);
+    }
 
-      try {
-        const keywords = await completeWithFallback(
-          "courseKeywords",
-          [
-            {
-              role: "system",
-              content:
-                "Extract the top 5 technical skills or professional keywords from the resume text. Return only the keywords separated by spaces. Do not include any other text.",
-            },
-            {
-              role: "user",
-              content: resumeText.slice(0, 5000),
-            },
-          ],
-          { temperature: 0.2, max_tokens: 100 },
-        );
+    const searchQueryGoal = jobGoal || "software engineering cloud devops tech skills";
 
-        console.log("Extracted keywords:", keywords);
+    const systemPrompt = `You are an expert career and education advisor.
+Your goal is to recommend real, highly relevant online and regional training courses tailored specifically for a candidate located in ${country}.
 
-        searchQuery = keywords
-          ? `best online courses for ${keywords} available in ${country}`
-          : `top rated professional skill development courses in ${country}`;
-      } catch (error) {
-        console.error("Error extracting keywords:", error);
-        searchQuery = `top rated professional skill development courses in ${country}`;
+CRITICAL INSTRUCTIONS:
+1. MANDATORY SEARCH: You MUST use the online_web_search tool to perform a web search for live course options. Search specifically for "${searchQueryGoal} course in ${country}" or related training queries.
+2. DYNAMIC DISCOVERY: Let the web search results dynamically determine the courses, platforms, academies, and training providers. Do not rely on fixed or hardcoded platform lists. Discover both top local/regional providers in ${country} and global platforms dynamically from search results.
+3. DYNAMIC COUNT: Return a dynamic list of relevant courses based on live search results, up to 15 courses max (minimum 1 to 15 courses).
+4. ACCURATE URLs: Ensure platformUrl contains valid links to the platform or course webpage discovered from web search.
+
+Return ONLY a valid JSON object with the key "courses" containing an array of course objects matching this schema:
+{
+  "courses": [
+    {
+      "title": string,
+      "platform": string,
+      "duration": string,
+      "reason": string,
+      "platformUrl": string,
+      "difficultyLevel": "Beginner" | "Intermediate" | "Advanced"
+    }
+  ]
+}
+Do NOT wrap in markdown code blocks like \`\`\`json. Return pure JSON only.`;
+
+    const userMessage = `Perform a web search using online_web_search for "${searchQueryGoal} course in ${country}".
+Dynamically recommend up to 15 top relevant courses based on real search results for someone located in ${country}.
+
+${jobGoal ? `TARGET CAREER GOAL / ROLE:\n${jobGoal}\n` : ""}
+${resumeContext ? `CANDIDATE RESUME HIGHLIGHTS:\n${resumeContext}\n` : ""}
+
+Return valid JSON with key "courses" containing an array of course items (up to 15 items max).`;
+
+    const agentOutput = await runLangGraphAgent({
+      systemPrompt,
+      userMessage,
+      temperature: 0.3,
+    });
+
+    let cleaned = agentOutput.trim();
+    if (cleaned.startsWith("```json")) {
+      cleaned = cleaned.replace(/^```json\s*/g, "").replace(/```\s*$/g, "");
+    } else if (cleaned.startsWith("```")) {
+      cleaned = cleaned.replace(/^```\s*/g, "").replace(/```\s*$/g, "");
+    }
+
+    let result;
+    try {
+      result = JSON.parse(cleaned);
+    } catch {
+      const match = cleaned.match(/\{[\s\S]*\}/);
+      if (match) {
+        result = JSON.parse(match[0]);
+      } else {
+        throw new Error("Invalid JSON returned from AI course recommender.");
       }
     }
 
-    const apiKey = process.env.SERPAPI_API_KEY;
-    if (!apiKey) {
-      console.error("SERPAPI_API_KEY is missing");
-      throw new Error("Server configuration error");
-    }
-
-    console.log(`Searching for: ${searchQuery}`);
-
-    const response = await fetch(
-      `https://serpapi.com/search.json?engine=google&q=${encodeURIComponent(searchQuery)}&api_key=${apiKey}&num=15`,
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch from SerpApi");
-    }
-
-    const data = await response.json();
-
-    if (data.error) {
-      throw new Error(data.error);
-    }
-
-    const courses =
-      data.organic_results?.map(
-        (result: {
-          title: string;
-          source?: string;
-          link: string;
-          snippet?: string;
-        }) => ({
-          title: result.title,
-          platform:
-            result.source ||
-            new URL(result.link).hostname.replace("www.", ""),
-          duration: "Self-paced",
-          reason:
-            result.snippet || "Recommended based on your search criteria.",
-          platformUrl: result.link,
-          difficultyLevel: "Intermediate",
-        }),
-      ) || [];
-
+    const courses = result.courses || [];
     return NextResponse.json({ courses });
   } catch (error) {
-    console.error("Error recommending courses:", error);
+    console.error("Error recommending courses with Gemini LangGraph:", error);
     return NextResponse.json(
       { error: "Failed to recommend courses" },
       { status: 500 },
