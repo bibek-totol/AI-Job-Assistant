@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import {
   Briefcase,
@@ -85,6 +86,7 @@ function StyledInput({
 
 /* ─── Main ─── */
 export default function InterviewScheduler() {
+  const router = useRouter();
   const [jobTitle, setJobTitle] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [interviewType, setInterviewType] = useState("technical");
@@ -193,6 +195,7 @@ export default function InterviewScheduler() {
     setInterviewTime("");
     setCopied(false);
     setShowQuestions(false);
+    router.push("/interview-scheduler");
   };
 
   return (
@@ -216,7 +219,6 @@ export default function InterviewScheduler() {
             style={{
               border: "1px solid rgba(255,255,255,0.08)",
               background: "rgba(255,255,255,0.03)",
-              opacity: 0,
             }}
           >
             <span
@@ -233,7 +235,6 @@ export default function InterviewScheduler() {
               fontFamily: "'Syne', sans-serif",
               letterSpacing: "-0.03em",
               lineHeight: 1.08,
-              opacity: 0,
             }}
           >
             Set up your{" "}
@@ -254,7 +255,6 @@ export default function InterviewScheduler() {
             style={{
               color: "rgba(255,255,255,0.32)",
               fontFamily: "'DM Sans', sans-serif",
-              opacity: 0,
             }}
           >
             Describe the role, pick a type, and let AI generate a tailored
@@ -271,7 +271,6 @@ export default function InterviewScheduler() {
               border: "1px solid rgba(255,255,255,0.07)",
               background: "rgba(255,255,255,0.02)",
               backdropFilter: "blur(12px)",
-              opacity: 0,
             }}
           >
             <div className="flex items-center gap-2 mb-8">
@@ -487,7 +486,7 @@ export default function InterviewScheduler() {
 
         {/* Result */}
         {generatedData && (
-          <div ref={resultRef} style={{ opacity: 0 }} className="space-y-4">
+          <div ref={resultRef} className="space-y-4">
             {/* Link card */}
             <div
               className="rounded-2xl p-6 sm:p-8"

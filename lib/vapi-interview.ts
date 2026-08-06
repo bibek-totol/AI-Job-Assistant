@@ -2,6 +2,36 @@ import Vapi from "@vapi-ai/web";
 import DailyIframe from "@daily-co/daily-js";
 import type { AssistantOverrides } from "@vapi-ai/web/dist/api";
 
+// Intercept DailyIframe.createCallObject to prevent Vapi SDK from attempting Krisp noise-cancellation worklet setup
+if (typeof window !== "undefined") {
+  const originalCreateCallObject = DailyIframe.createCallObject;
+  if (originalCreateCallObject && !(originalCreateCallObject as any).__isPatched) {
+    const patchedCreateCallObject = function (properties?: any) {
+      const callObject = originalCreateCallObject.call(DailyIframe, properties);
+      if (callObject && typeof callObject.updateInputSettings === "function") {
+        const originalUpdateInputSettings = callObject.updateInputSettings.bind(callObject);
+        callObject.updateInputSettings = async function (settings: any) {
+          if (settings?.audio?.processor?.type === "noise-cancellation") {
+            return originalUpdateInputSettings({
+              ...settings,
+              audio: {
+                ...settings?.audio,
+                processor: {
+                  type: "none",
+                },
+              },
+            });
+          }
+          return originalUpdateInputSettings(settings);
+        };
+      }
+      return callObject;
+    };
+    (patchedCreateCallObject as any).__isPatched = true;
+    DailyIframe.createCallObject = patchedCreateCallObject;
+  }
+}
+
 let activeClient: Vapi | null = null;
 let cachedVapiClient: Vapi | null = null;
 let cachedApiKey: string | null = null;
@@ -39,16 +69,41 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function getSafeString(val: unknown): string {
+  if (typeof val === "string") return val;
+  if (val instanceof Error) return val.message;
+  if (typeof val === "object" && val !== null) {
+    try {
+      const record = val as Record<string, unknown>;
+      if (typeof record.message === "string") return record.message;
+      if (typeof record.error === "string") return record.error;
+      if (record.error && typeof record.error === "object") {
+        const nested = record.error as Record<string, unknown>;
+        if (typeof nested.message === "string") return nested.message;
+      }
+      return JSON.stringify(val);
+    } catch {
+      return String(val);
+    }
+  }
+  return String(val ?? "");
+}
+
 function getOrCreateVapiClient(apiKey: string): Vapi {
   if (cachedVapiClient && cachedApiKey === apiKey) {
     return cachedVapiClient;
   }
 
-  cachedVapiClient = new Vapi(apiKey, undefined, undefined, {
-    allowMultipleCallInstances: true,
-    audioSource: true,
-    startAudioOff: false,
-  } as { audioSource?: boolean; startAudioOff?: boolean });
+  cachedVapiClient = new Vapi(
+    apiKey,
+    undefined,
+    { avoidEval: true, micAudioMode: "speech" } as any,
+    {
+      allowMultipleCallInstances: true,
+      audioSource: true,
+      startAudioOff: false,
+    } as { audioSource?: boolean; startAudioOff?: boolean },
+  );
 
   cachedApiKey = apiKey;
   return cachedVapiClient;
@@ -66,31 +121,7 @@ export function formatVapiError(error: unknown): string {
     return "Unknown Vapi error";
   }
 
-  const record = error as Record<string, unknown>;
-
-  if (typeof record.error === "string") {
-    return record.error;
-  }
-
-  const nested = record.error;
-  if (nested && typeof nested === "object") {
-    const nestedRecord = nested as Record<string, unknown>;
-    if (typeof nestedRecord.message === "string") {
-      return nestedRecord.message;
-    }
-    if (nestedRecord.message && typeof nestedRecord.message === "object") {
-      return JSON.stringify(nestedRecord.message);
-    }
-  }
-
-  if (typeof record.message === "string") {
-    return record.message;
-  }
-  if (record.message && typeof record.message === "object") {
-    return JSON.stringify(record.message);
-  }
-
-  return "Vapi call failed. Check your assistant ID and dashboard configuration.";
+  return getSafeString(error) || "Vapi call failed. Check your assistant ID and dashboard configuration.";
 }
 
 export function buildInterviewSystemPrompt(
@@ -150,35 +181,18 @@ export function buildAssistantOverrides(
     firstMessage: `Hello${greetingName}! Welcome to your AI interview. When you're ready to begin, please say "I'm ready" out loud so I know your microphone is working.`,
     firstMessageMode: "assistant-speaks-first",
     maxDurationSeconds: 3600,
-    startSpeakingPlan: {
-      waitSeconds: 1.2,
+    transcriber: {
+      provider: "deepgram",
+      model: "nova-2",
+      language: "en-US",
     },
-    hooks: [
-      {
-        on: "customer.speech.timeout",
-        options: {
-          timeoutSeconds: 25,
-          triggerMaxCount: 8,
-          triggerResetMode: "onUserSpeech" as const,
-        },
-        do: [
-          {
-            type: "say",
-            exact:
-              "Take your time. When you're ready, please say hello or answer the question.",
-          },
-        ],
-      },
-    ] as unknown as AssistantOverrides["hooks"],
     variableValues: {
       candidateName: candidateName || "Candidate",
       jobTitle: jobTitle || "the open role",
       interviewQuestions: questionText || "General interview questions",
       systemPrompt,
     },
-    // Vapi dashboard default is 30s — interviews need longer thinking pauses
-    silenceTimeoutSeconds: 300,
-  } as unknown as AssistantOverrides;
+  };
 
   const provider = process.env.NEXT_PUBLIC_VAPI_MODEL_PROVIDER;
   const modelId = process.env.NEXT_PUBLIC_VAPI_MODEL;
@@ -277,7 +291,10 @@ export async function startVapiSession(
 
       handlers.onCallStart?.();
       try {
-        vapi.setMuted(false);
+        const daily = vapi.getDailyCallObject();
+        if (daily) {
+          vapi.setMuted(false);
+        }
       } catch {
         // ignore
       }
@@ -289,7 +306,22 @@ export async function startVapiSession(
     vapi.on("message", (message) => handlers.onMessage?.(message));
 
     vapi.on("error", (error) => {
+      const errorMsg = getSafeString(error);
       const typed = error as { type?: string } | null;
+
+      // Suppress Krisp worklet module loading abort errors & nonfatal audio processor errors
+      if (
+        errorMsg.includes("KrispSDK") ||
+        errorMsg.includes("worklet") ||
+        errorMsg.includes("WORKLET_NOT_SUPPORTED") ||
+        errorMsg.includes("krisp filter") ||
+        typed?.type === "audio-processor-error" ||
+        typed?.type === "audio-processing-setup-error"
+      ) {
+        console.warn("[vapi] Suppressed non-fatal noise filter event:", errorMsg);
+        return;
+      }
+
       if (typed?.type === "start-method-error") {
         lastStartError = formatVapiError(error);
         return;
@@ -344,3 +376,4 @@ export async function startVapiSession(
 export function getActiveVapiClient(): Vapi | null {
   return activeClient;
 }
+

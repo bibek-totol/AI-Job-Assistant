@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { Mic, Video, CheckCircle2, Loader2, Hash } from "lucide-react";
 import toast from "react-hot-toast";
 import gsap from "gsap";
@@ -25,6 +26,7 @@ const PRE_CHECKS = [
 ];
 
 export default function InterviewEntry({ id }: InterviewEntryProps) {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [isStarting, setIsStarting] = useState(false);
@@ -107,6 +109,7 @@ export default function InterviewEntry({ id }: InterviewEntryProps) {
           setHasStarted(false);
           setName("");
           setEmail("");
+          router.push("/interview-scheduler");
         }}
         questions={questions}
         candidateName={name}
@@ -137,7 +140,6 @@ export default function InterviewEntry({ id }: InterviewEntryProps) {
             style={{
               border: "1px solid rgba(255,255,255,0.08)",
               background: "rgba(255,255,255,0.03)",
-              opacity: 0,
             }}
           >
             <span
@@ -153,7 +155,6 @@ export default function InterviewEntry({ id }: InterviewEntryProps) {
             style={{
               fontFamily: "'Syne', sans-serif",
               letterSpacing: "-0.025em",
-              opacity: 0,
             }}
           >
             Ready to{" "}
@@ -174,7 +175,6 @@ export default function InterviewEntry({ id }: InterviewEntryProps) {
             style={{
               color: "rgba(255,255,255,0.30)",
               fontFamily: "'DM Sans', sans-serif",
-              opacity: 0,
             }}
           >
             Enter your details below to start your AI-powered interview session.
@@ -189,7 +189,6 @@ export default function InterviewEntry({ id }: InterviewEntryProps) {
             border: "1px solid rgba(255,255,255,0.07)",
             background: "rgba(255,255,255,0.02)",
             backdropFilter: "blur(12px)",
-            opacity: 0,
           }}
         >
           {/* Interview ID + status */}

@@ -6,9 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "node -e \"const fs=require('fs');const p='node_modules/@vapi-ai/web/dist/vapi.js';if(fs.existsSync(p)){let c=fs.readFileSync(p,'utf8');c=c.replaceAll('type: \\'noise-cancellation\\'','type: \\'none\\'');fs.writeFileSync(p,c);}\""
   },
   "dependencies": {
+    "@daily-co/daily-js": "^0.91.0",
     "@google/generative-ai": "^0.24.1",
     "@langchain/core": "^1.2.4",
     "@langchain/google-genai": "^2.2.0",
@@ -16,7 +18,7 @@
     "@langchain/textsplitters": "^1.0.1",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-slot": "^1.2.4",
-    "@vapi-ai/web": "^2.5.2",
+    "@vapi-ai/web": "^2.6.1",
     "@vercel/analytics": "^1.6.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

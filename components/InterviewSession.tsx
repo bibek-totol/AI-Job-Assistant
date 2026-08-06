@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
+import { useRouter } from "next/navigation"
 import { Mic, MicOff, Video, VideoOff, PhoneOff, Wifi, WifiOff, Clock } from "lucide-react"
 import toast from "react-hot-toast"
 import gsap from "gsap"
@@ -144,14 +145,38 @@ export default function InterviewSession({
           onSpeechEnd:   () => { if (!cancelled) setAiSpeaking(false) },
           onMessage: (message) => {
             const msg = message as { type?: string; status?: string; endedReason?: string }
-            if (msg?.type === "status-update" && msg.status === "ended" && msg.endedReason === "silence-timed-out") {
-              toast.error("Interview ended: no speech detected. Check your microphone.", { duration: 6000 })
+            if (msg?.type === "status-update" && msg.status === "ended") {
+              const reason = msg.endedReason || ""
+              if (reason === "silence-timed-out") {
+                toast.error("Interview ended due to inactivity. Check your microphone.", { duration: 6000 })
+              } else if (reason === "customer-ended-call" || reason === "assistant-ended-call") {
+                toast.success("Interview completed.")
+              } else if (
+                reason.includes("quota") ||
+                reason.includes("credit") ||
+                reason.includes("billing") ||
+                reason.includes("limit")
+              ) {
+                toast.error("Vapi account credit/quota limit reached. Check your Vapi dashboard balance.", { duration: 8000 })
+              } else if (reason.includes("transcriber") || reason.includes("vapifault")) {
+                toast.error(`Vapi Transcriber error: ${reason}. Using fallback transcriber.`, { duration: 8000 })
+              } else if (reason && reason !== "meeting-has-ended") {
+                toast.error(`Interview ended: ${reason}`, { duration: 5000 })
+              }
             }
           },
           onError: (error) => {
             if (cancelled) return
-            const typed = error as { type?: string } | null
-            if (typed?.type === "daily-error") return
+            const typed = error as { type?: string; error?: { message?: string } } | null
+            const errorMsg = typeof typed?.error === "string" ? typed.error : typed?.error?.message || ""
+            if (
+              errorMsg.includes("KrispSDK") ||
+              errorMsg.includes("worklet") ||
+              typed?.type === "daily-error" ||
+              typed?.type === "audio-processor-error"
+            ) {
+              return
+            }
             setConnectionStatus("error")
             toast.error(`Interview error: ${formatVapiError(error)}`)
           },
@@ -175,13 +200,23 @@ export default function InterviewSession({
   const toggleMic = () => {
     const next = !isMicOn
     setIsMicOn(next)
-    getActiveVapiClient()?.setMuted(!next)
+    try {
+      const client = getActiveVapiClient()
+      if (client && client.getDailyCallObject()) {
+        client.setMuted(!next)
+      }
+    } catch (err) {
+      console.warn("[vapi] Mic toggle ignored (call not active):", err)
+    }
   }
+
+  const router = useRouter()
 
   const handleEnd = async () => {
     await stopVapiSession()
     mediaStreamRef.current?.getTracks().forEach((t) => t.stop())
     onEnd()
+    router.push("/interview-scheduler")
   }
 
   const statusMeta = STATUS_META[connectionStatus] ?? STATUS_META.connecting
